@@ -5,17 +5,17 @@ __author__ = 'Vladimir Vorobyev'
 
 
 from sys import argv
-import brainx.context as context
+import context
 
-
-optsargs = context.OptsArgs()
 
 # parse options
+context.OptsArgs.parse_opts(argv)
+'''
 for opt in argv:
     if not context.is_opt(opt):
         pass
     elif opt == '--lc2f':
-        optsargs = True
+        pass
     elif opt == '--f2lc':
         pass
     elif opt == '-i':
@@ -36,10 +36,10 @@ for opt in argv:
         print(context.HELP)
     else:
         print(context.UNKNOWN_OPTS(opt))
-        exit(context.RETURN_ERROR)
+        exit(context.RETURN_ERROR)'''
 
 # remove options (don't need them already)
-argv = [arg for arg in argv if not context.is_opt(arg)]
+# argv = [arg for arg in argv if not context.is_opt(arg)]
 
 # importaint! to count argc after removing options
 argc = len(argv)
@@ -49,7 +49,7 @@ argc = len(argv)
 if argc == 1:
     # a) Interpreter itself (interactive mode)
     print('run interactive interpreter')
-    exit(context.RETURN_OK)
+    exit(c.RETURN_OK)
 
 
 print(argv)
