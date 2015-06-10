@@ -123,7 +123,7 @@ class Settings:
                 print(UNKNOWN_OPTS(opt))
                 exit(RETURN_ERROR)
         argv = [arg for arg in opts if not is_opt(arg)]
-        print(argv)
+        # print(argv)
         argc = len(argv)
         if argc == 1:
             Settings.interactive_mode = True

@@ -21,9 +21,22 @@ elif context.Settings.opt_lc2f:
     print('run lc2f translater')
 
 elif context.Settings.interactive_mode:
-    program = input('Please, insert brainfuck code: ')
     #read input
-    print('run interpreter on' + program)
+    sourcecode = input('Please, insert brainfuck code: ')
+
+elif context.Settings.arg_console_sourcecode is not None:
+    sourcecode = context.Settings.arg_console_sourcecode
+
+elif context.Settings.arg_source_file is not None:
+    #analyze file
+    if context.Settings.arg_source_file[-2:] == '.b':
+        #read text file
+        with open(context.Settings.arg_source_file, encoding='ASCII') as file:
+            sourcecode = file.read()
+    pass
+
+# run sourcecode
+
 
 
 #print(vars(context.Settings))
@@ -31,6 +44,7 @@ print('source file: ')
 print(context.Settings.arg_source_file)
 print('command line:')
 print(context.Settings.arg_console_sourcecode)
+print('Source code: ' + sourcecode)
 # --- adding parameters according to functional requirements ---
 
     #
