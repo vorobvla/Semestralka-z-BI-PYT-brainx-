@@ -51,6 +51,9 @@ class Interpreter:
     def print_head():
         Interpreter.output += chr(Interpreter.memory[Interpreter.memory_ptr])
 
+    
+
+
 
 def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     # setup interpreter
@@ -58,37 +61,50 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
     Interpreter.output = ''
+    #contains positions of pointer in the beginning of cykle
+    cykle_stack = []
+    sourcecode_len = len(sourcecode)
 
-    for instr in sourcecode:
-        if instr.isspace():
+    idx = 0
+    while idx < sourcecode_len:
+        if sourcecode[idx].isspace():
             pass
-        elif instr == '+':
+        elif sourcecode[idx] == '+':
             Interpreter.increase_head()
-        elif instr == '-':
+        elif sourcecode[idx] == '-':
             Interpreter.decrease_head()
-        elif instr == '<':
+        elif sourcecode[idx] == '<':
             Interpreter.move_head_lt()
-        elif instr == '>':
+        elif sourcecode[idx] == '>':
             Interpreter.move_head_rt()
-        elif instr == '.':
+        elif sourcecode[idx] == '.':
             print('FOUND .')
             Interpreter.print_head()
-        elif instr == ',':
+        elif sourcecode[idx] == ',':
             pass
-        elif instr == '[':
-            # start cykle
-            pass
-        elif instr == ']':
-            # end cykle
-            pass
-        elif instr == '!':
+        elif sourcecode[idx] == '[':
+            if Interpreter.get_head() == 0:
+                # skip to ]
+                while sourcecode[idx] != ']':
+                    idx += 1
+            else:
+                cykle_stack.append(idx)
+        elif sourcecode[idx] == ']':
+            if Interpreter.get_head() != 0:
+                # skip to [
+                idx = cykle_stack.pop()
+                continue
+            else:
+                pass
+        elif sourcecode[idx] == '!':
             # distinguish input
             pass
-        elif instr == '#':
+        elif sourcecode[idx] == '#':
             # print test
             pass
         else:
-            raise UnknownInstructionException('Interpreter found unknown instruction \'{}\''.format(instr))
+            raise UnknownInstructionException('Interpreter found unknown instruction \'{}\''.format(sourcecode[idx]))
+        idx += 1
     return Interpreter.output
 
 
