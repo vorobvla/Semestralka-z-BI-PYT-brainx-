@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # 'constant' strings
+
+import lex_analyzer
+
 HELP = 'HELP!!!!!'
 USAGE = 'Usage: brainx [sourcefile] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]' \
         '| --lc2f input_bl_bc_file [output_bf_file] |' \
@@ -32,7 +35,7 @@ class Settings:
     opt_pnm = False
     opt_pbm = False
     translate_mode = False
-    interactive_mode= False
+    interactive_mode = False
     image_lang = None
     arg_source_file = None
     arg_input_bf_file = None
@@ -40,6 +43,7 @@ class Settings:
     arg_output_bl_bc_file = None
     arg_input_bl_bc_file = None
     arg_output_bf_file = None
+    arg_console_sourcecode = None
 
 
     # parses opts. returns a list of unparced arguments
@@ -119,11 +123,18 @@ class Settings:
                 print(UNKNOWN_OPTS(opt))
                 exit(RETURN_ERROR)
         argv = [arg for arg in opts if not is_opt(arg)]
+        print(argv)
         argc = len(argv)
         if argc == 1:
             Settings.interactive_mode = True
         elif argc == 2:
-            Settings.arg_source_file = argv[1]
+            # TODO: note in help that quotes need to be quoted
+            if argv[1].startswith('"') and argv[1].endswith('"'):
+                Settings.arg_console_sourcecode = argv[1][1:-1]
+            elif lex_analyzer.is_bf(argv[1]):
+                Settings.arg_console_sourcecode = argv[1]
+            else:
+                Settings.arg_source_file = argv[1]
         else:
             pass
             # raise ArgsException('Unexpected arguments occured: \'{}\''.format(', '.join(argv[2:])))

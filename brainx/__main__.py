@@ -14,12 +14,23 @@ context.Settings.parse_opts(argv)
 # remove options (don't need them already)
 # argv = [arg for arg in argv if not context.is_opt(arg)]
 
-# importaint! to count argc after removing options
+if context.Settings.opt_f2lc:
+    print('run f2lc translater')
+
+elif context.Settings.opt_lc2f:
+    print('run lc2f translater')
+
+elif context.Settings.interactive_mode:
+    program = input('Please, insert brainfuck code: ')
+    #read input
+    print('run interpreter on' + program)
 
 
-
-print()
-print(vars(context.Settings))
+#print(vars(context.Settings))
+print('source file: ')
+print(context.Settings.arg_source_file)
+print('command line:')
+print(context.Settings.arg_console_sourcecode)
 # --- adding parameters according to functional requirements ---
 
     #
