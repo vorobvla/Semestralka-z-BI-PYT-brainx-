@@ -6,6 +6,8 @@ def is_bf(code):
         if c == '[' or c == ']' or c == '.' or c == ',' or c == '+' or c == '-'\
                 or c == '<' or c == '>' or c == '#' or c == '!':
             pass
+        elif c.isspace():
+            pass
         else:
             return False
     return True

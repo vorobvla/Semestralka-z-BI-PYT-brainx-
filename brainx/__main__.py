@@ -6,7 +6,7 @@ __author__ = 'Vladimir Vorobyev'
 
 from sys import argv
 import context
-
+import interpreter
 
 # parse options
 context.Settings.parse_opts(argv)
@@ -37,7 +37,7 @@ elif context.Settings.arg_source_file is not None:
 
 # run sourcecode
 
-
+output = interpreter.interpret_bf(sourcecode)
 
 #print(vars(context.Settings))
 print('source file: ')
@@ -45,18 +45,6 @@ print(context.Settings.arg_source_file)
 print('command line:')
 print(context.Settings.arg_console_sourcecode)
 print('Source code: ' + sourcecode)
-# --- adding parameters according to functional requirements ---
-
-    #
-
-    # Translater LC2F
-    # b) Translation of picture to stdout or text file
-#   c) Translation of text file (brainfuck sourcecode) to brainlotter or braincopter image
 
 
-#   d) Test output to file
-#   e) Advanced testing options
-#   f) Help (implemented by angpars as default)
-
-# parser.add_argument('--lc2f', action = 'lc2f', help = 'Translate brainlotter or braincopter '
-#                                                      'image to brainfuck source code')
+print('Output: "{}"'.format(output))
