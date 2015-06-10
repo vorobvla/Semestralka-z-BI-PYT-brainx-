@@ -9,51 +9,17 @@ import context
 
 
 # parse options
-context.OptsArgs.parse_opts(argv)
-'''
-for opt in argv:
-    if not context.is_opt(opt):
-        pass
-    elif opt == '--lc2f':
-        pass
-    elif opt == '--f2lc':
-        pass
-    elif opt == '-i':
-        pass
-    elif opt == '-o':
-        pass
-    elif opt == '-t' or opt == '--test':
-        pass
-    elif opt == '-m' or opt == '--memory':
-        pass
-    elif opt == '-p' or opt == '--memory-pointer':
-        pass
-    elif opt == '--pnm':
-        pass
-    elif opt == '--pbm':
-        pass
-    elif opt == '-h' or opt == '--help':
-        print(context.HELP)
-    else:
-        print(context.UNKNOWN_OPTS(opt))
-        exit(context.RETURN_ERROR)'''
+context.Settings.parse_opts(argv)
 
 # remove options (don't need them already)
 # argv = [arg for arg in argv if not context.is_opt(arg)]
 
 # importaint! to count argc after removing options
-argc = len(argv)
 
 
-# parse args
-if argc == 1:
-    # a) Interpreter itself (interactive mode)
-    print('run interactive interpreter')
-    exit(c.RETURN_OK)
 
-
-print(argv)
 print()
+print(vars(context.Settings))
 # --- adding parameters according to functional requirements ---
 
     #
