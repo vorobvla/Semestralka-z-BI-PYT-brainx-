@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-class UnknownInstructionException(Exception):
+class InvalidCodeException(Exception):
     pass
 
 
@@ -9,6 +9,8 @@ class Interpreter:
     memory = bytearray()
     tape_len = 1
     memory_ptr = 0
+    input = ''
+    input_ptr = 0
     db_file_number = 0
     output = ''
 
@@ -51,9 +53,14 @@ class Interpreter:
     def print_head():
         Interpreter.output += chr(Interpreter.memory[Interpreter.memory_ptr])
 
-    
-
-
+    # read from input and write to actual cell
+    @staticmethod
+    def write_from_input_head():
+        if Interpreter.input_ptr < len(Interpreter.input):
+            Interpreter.memory[Interpreter.memory_ptr] = ord(Interpreter.input[Interpreter.input_ptr]) % 256
+            Interpreter.input_ptr += 1
+        else:
+            pass
 
 def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     # setup interpreter
@@ -65,7 +72,12 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     cykle_stack = []
     sourcecode_len = len(sourcecode)
 
+    # find input
+    input_idx = sourcecode.find('!')
+    Interpreter.input = sourcecode[input_idx + 1:] if input_idx != -1 else ''
+
     idx = 0
+
     while idx < sourcecode_len:
         if sourcecode[idx].isspace():
             pass
@@ -78,10 +90,9 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
         elif sourcecode[idx] == '>':
             Interpreter.move_head_rt()
         elif sourcecode[idx] == '.':
-            print('FOUND .')
             Interpreter.print_head()
         elif sourcecode[idx] == ',':
-            pass
+            Interpreter.write_from_input_head()
         elif sourcecode[idx] == '[':
             if Interpreter.get_head() == 0:
                 # skip to ]
@@ -90,21 +101,30 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
             else:
                 cykle_stack.append(idx)
         elif sourcecode[idx] == ']':
+            if len(cykle_stack) == 0:
+                raise InvalidCodeException('Interpreter found illegal end of cykle instruction(\']\') at position {}'
+                                           .format(idx))
             if Interpreter.get_head() != 0:
                 # skip to [
                 idx = cykle_stack.pop()
                 continue
             else:
-                pass
+                cykle_stack.pop()
         elif sourcecode[idx] == '!':
-            # distinguish input
-            pass
+            # end of progrm
+            break
         elif sourcecode[idx] == '#':
             # print test
             pass
         else:
-            raise UnknownInstructionException('Interpreter found unknown instruction \'{}\''.format(sourcecode[idx]))
+            raise InvalidCodeException('Interpreter found unknown instruction \'{}\' at position {}'
+                                       .format(sourcecode[idx], idx))
         idx += 1
+    if len(cykle_stack) != 0:
+        raise InvalidCodeException('Interpreter found illegal start of cykle instruction(\'[\') at position {}'
+                                   .format(cykle_stack.pop()))
+    print('INPUT: ')
+    print(Interpreter.input)
     return Interpreter.output
 
 
