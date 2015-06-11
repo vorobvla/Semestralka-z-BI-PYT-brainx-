@@ -96,6 +96,7 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
     idx = 0
 
     while idx < sourcecode_len:
+        print("Processing {} at {}".format(sourcecode[idx], idx))
         if sourcecode[idx].isspace():
             pass
         elif sourcecode[idx] == '+':
@@ -111,12 +112,12 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
         elif sourcecode[idx] == ',':
             Interpreter.read_from_input_head()
         elif sourcecode[idx] == '[':
+            cykle_stack.append(idx)
             if Interpreter.read_cell() == 0:
                 # skip to ]
-                while sourcecode[idx] != ']':
-                    idx += 1
+                sourcecode.rfind(']')
             else:
-                cykle_stack.append(idx)
+                pass
         elif sourcecode[idx] == ']':
             if len(cykle_stack) == 0:
                 raise InvalidCodeException('Interpreter found illegal end of cykle instruction (\']\') at position {}'
