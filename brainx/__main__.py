@@ -13,7 +13,7 @@ context.Settings.parse_opts(argv)
 
 # remove options (don't need them already)
 # argv = [arg for arg in argv if not context.is_opt(arg)]
-
+#print(vars(context.Settings))
 if context.Settings.opt_f2lc:
     print('run f2lc translater')
 
@@ -37,9 +37,10 @@ elif context.Settings.arg_source_file is not None:
 
 # run sourcecode
 
-output = interpreter.interpret_bf(sourcecode)
+output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, context.Settings.arg_memory_pointer,
+                                  context.Settings.opt_test)
 
-#print(vars(context.Settings))
+
 print('source file: ')
 print(context.Settings.arg_source_file)
 print('command line:')

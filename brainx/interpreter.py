@@ -6,12 +6,13 @@ class InvalidCodeException(Exception):
 
 
 class Interpreter:
-    memory = bytearray()
+    memory = bytearray(1)
     tape_len = 1
     memory_ptr = 0
     input = ''
     input_ptr = 0
     output = bytearray()
+    debug_file_num = 1
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
     get_head = lambda: Interpreter.memory[Interpreter.memory_ptr]
@@ -60,8 +61,22 @@ class Interpreter:
             Interpreter.input_ptr += 1
         else:
             pass
-    
-def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
+
+    # flush test info to debug file
+    @staticmethod
+    def log_state_to_file(sourcecode):
+        #UNIX endline
+        lf = chr(10)
+        with open('debug_{:02}.log'.format(Interpreter.debug_file_num), encoding='ASCII', mode='w') as debug_file:
+                debug_file.write('# program data' + lf + sourcecode + lf + lf)
+                debug_file.write('# memory' + lf + str(bytes(Interpreter.memory)) + lf + lf)
+                debug_file.write('# memory pointer' + lf + str(Interpreter.memory_ptr) + lf + lf)
+                debug_file.write('# output' + lf + str(bytes(Interpreter.output)) + lf + lf)
+                Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
+                pass
+
+
+def interpret_bf(sourcecode, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
@@ -71,9 +86,7 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     # contains positions of pointer in the beginning of cykle
     cykle_stack = []
     sourcecode_len = len(sourcecode)
-    debug_file_num = 1
-    #UNIX endline
-    lf = chr(10)
+    Interpreter.debug_file_num = 1
 
     # find input
     input_idx = sourcecode.find('!')
@@ -118,13 +131,7 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
             break
         elif sourcecode[idx] == '#':
             # print test
-            with open('debug_{:02}.log'.format(debug_file_num), encoding='ASCII', mode='w') as debug_file:
-                debug_file.write('# program data' + lf + sourcecode + lf + lf)
-                debug_file.write('# memory' + lf + str(bytes(Interpreter.memory)) + lf + lf)
-                debug_file.write('# memory pointer' + lf + str(Interpreter.memory_ptr) + lf + lf)
-                debug_file.write('# output' + lf + str(bytes(Interpreter.output)) + lf + lf)
-                debug_file_num = debug_file_num + 1 if debug_file_num < 99 else 1
-                pass
+            Interpreter.log_state_to_file(sourcecode)
         else:
             raise InvalidCodeException('Interpreter found unknown instruction \'{}\' at position {}'
                                        .format(sourcecode[idx], idx))
@@ -132,8 +139,8 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     if len(cykle_stack) != 0:
         raise InvalidCodeException('Interpreter found illegal start of cykle instruction (\'[\') at position {}'
                                    .format(cykle_stack.pop()))
-    print('INPUT: ')
-    print(Interpreter.input)
+    if test_opt:
+        Interpreter.log_state_to_file(sourcecode)
     return Interpreter.output
 
 

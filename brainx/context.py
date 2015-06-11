@@ -30,8 +30,8 @@ class Settings:
     opt_lc2f = False
     opt_f2lc = False
     opt_test = False
-    arg_memory = False
-    arg_memory_pointer = False
+    arg_memory = b'\x00'
+    arg_memory_pointer = 0
     opt_pnm = False
     opt_pbm = False
     translate_mode = False
