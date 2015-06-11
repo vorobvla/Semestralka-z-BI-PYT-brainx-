@@ -15,7 +15,7 @@ class Interpreter:
     debug_file_num = 1
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
-    get_head = lambda: Interpreter.memory[Interpreter.memory_ptr]
+    read_cell = lambda: Interpreter.memory[Interpreter.memory_ptr]
 
     # move pointer to 1 cell to the left
     @staticmethod
@@ -38,24 +38,24 @@ class Interpreter:
 
     # increase the value, stored in the memoty cell,  pointered by pointer
     @staticmethod
-    def increase_head():
+    def increase_cell():
         Interpreter.memory[Interpreter.memory_ptr] = 0 if Interpreter.memory[Interpreter.memory_ptr] == 255 else \
             Interpreter.memory[Interpreter.memory_ptr] + 1
 
     # decrease the value, stored in the memoty cell,  pointered by pointer
     @staticmethod
-    def decrease_head():
+    def decrease_cell():
         Interpreter.memory[Interpreter.memory_ptr] = 255 if Interpreter.memory[Interpreter.memory_ptr] == 0 else \
             Interpreter.memory[Interpreter.memory_ptr] - 1
 
     # print conent of actual mem cell to ascii char
     @staticmethod
-    def print_head():
+    def print_cell():
         Interpreter.output.append(Interpreter.memory[Interpreter.memory_ptr])
 
     # read from input and write to actual cell
     @staticmethod
-    def write_from_input_head():
+    def read_from_input_head():
         if Interpreter.input_ptr < len(Interpreter.input):
             Interpreter.memory[Interpreter.memory_ptr] = ord(Interpreter.input[Interpreter.input_ptr]) % 256
             Interpreter.input_ptr += 1
@@ -75,10 +75,9 @@ class Interpreter:
                 Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
                 pass
 
-
-def interpret_bf(sourcecode, in_memory='\x00', in_memory_ptr=0, test_opt=False):
+def interpret_bf(sourcecode, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
-    Interpreter.memory = bytearray(in_memory, encoding='ASCII')
+    Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
     Interpreter.output = bytearray()
@@ -98,19 +97,19 @@ def interpret_bf(sourcecode, in_memory='\x00', in_memory_ptr=0, test_opt=False):
         if sourcecode[idx].isspace():
             pass
         elif sourcecode[idx] == '+':
-            Interpreter.increase_head()
+            Interpreter.increase_cell()
         elif sourcecode[idx] == '-':
-            Interpreter.decrease_head()
+            Interpreter.decrease_cell()
         elif sourcecode[idx] == '<':
             Interpreter.move_head_lt()
         elif sourcecode[idx] == '>':
             Interpreter.move_head_rt()
         elif sourcecode[idx] == '.':
-            Interpreter.print_head()
+            Interpreter.print_cell()
         elif sourcecode[idx] == ',':
-            Interpreter.write_from_input_head()
+            Interpreter.read_from_input_head()
         elif sourcecode[idx] == '[':
-            if Interpreter.get_head() == 0:
+            if Interpreter.read_cell() == 0:
                 # skip to ]
                 while sourcecode[idx] != ']':
                     idx += 1
@@ -120,7 +119,7 @@ def interpret_bf(sourcecode, in_memory='\x00', in_memory_ptr=0, test_opt=False):
             if len(cykle_stack) == 0:
                 raise InvalidCodeException('Interpreter found illegal end of cykle instruction (\']\') at position {}'
                                            .format(idx))
-            if Interpreter.get_head() != 0:
+            if Interpreter.read_cell() != 0:
                 # skip to [
                 idx = cykle_stack.pop()
                 continue
