@@ -31,7 +31,7 @@ elif context.Settings.arg_source_file is not None:
     #analyze file
     if context.Settings.arg_source_file[-2:] == '.b':
         #read text file
-        with open(context.Settings.arg_source_file, encoding='ASCII') as file:
+        with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
             sourcecode = file.read()
     pass
 
@@ -46,5 +46,4 @@ print('command line:')
 print(context.Settings.arg_console_sourcecode)
 print('Source code: ' + sourcecode)
 
-
-print('Output: "{}"'.format(output))
+print('Output: "{}"'.format(bytes(output)))
