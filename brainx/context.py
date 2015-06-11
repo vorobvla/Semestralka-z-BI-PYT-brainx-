@@ -29,7 +29,7 @@ class Settings:
     opt_f2lc = False
     opt_test = False
     # must be str!!!
-    arg_memory = '\x00'
+    arg_memory = b'\x00'
     arg_memory_pointer = 0
     opt_pnm = False
     opt_pbm = False
@@ -110,7 +110,9 @@ class Settings:
             elif opts[idx] == '-m' or opts[idx] == '--memory':
                 try:
                     if not is_opt(opts[idx + 1]):
+                        # print('\n\nProcessing -m.\nGot: ' + str(opts[idx + 1]))
                         Settings.arg_memory = opts[idx + 1]
+                        # print('Saved: ' + str(Settings.arg_memory ))
                         idx += 2
                         continue
                 except IndexError:
@@ -122,7 +124,9 @@ class Settings:
                     raise OptsDependencyException('Interpter oprions together with tanslate occured')
                 try:
                     if not is_opt(opts[idx + 1]):
-                        Settings.arg_memory = opts[idx + 1]
+                        # print('\n\nProcessing -p.\nGot: ' + str(opts[idx + 1]))
+                        Settings.arg_memory_pointer = opts[idx + 1]
+                        # print('Saved: ' + str(Settings.arg_memory_pointer ))
                         idx += 2
                         continue
                 except IndexError:
