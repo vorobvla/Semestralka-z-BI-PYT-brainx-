@@ -12,7 +12,7 @@ class Interpreter:
     input = ''
     input_ptr = 0
     db_file_number = 0
-    output = ''
+    output = bytearray()
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
     get_head = lambda: Interpreter.memory[Interpreter.memory_ptr]
@@ -51,7 +51,7 @@ class Interpreter:
     # print conent of actual mem cell to ascii char
     @staticmethod
     def print_head():
-        Interpreter.output += chr(Interpreter.memory[Interpreter.memory_ptr])
+        Interpreter.output.append(Interpreter.memory[Interpreter.memory_ptr])
 
     # read from input and write to actual cell
     @staticmethod
@@ -67,7 +67,7 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
-    Interpreter.output = ''
+    Interpreter.output = bytearray()
     #contains positions of pointer in the beginning of cykle
     cykle_stack = []
     sourcecode_len = len(sourcecode)
@@ -102,7 +102,7 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
                 cykle_stack.append(idx)
         elif sourcecode[idx] == ']':
             if len(cykle_stack) == 0:
-                raise InvalidCodeException('Interpreter found illegal end of cykle instruction(\']\') at position {}'
+                raise InvalidCodeException('Interpreter found illegal end of cykle instruction (\']\') at position {}'
                                            .format(idx))
             if Interpreter.get_head() != 0:
                 # skip to [
@@ -121,7 +121,7 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
                                        .format(sourcecode[idx], idx))
         idx += 1
     if len(cykle_stack) != 0:
-        raise InvalidCodeException('Interpreter found illegal start of cykle instruction(\'[\') at position {}'
+        raise InvalidCodeException('Interpreter found illegal start of cykle instruction (\'[\') at position {}'
                                    .format(cykle_stack.pop()))
     print('INPUT: ')
     print(Interpreter.input)
