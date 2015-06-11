@@ -11,7 +11,6 @@ class Interpreter:
     memory_ptr = 0
     input = ''
     input_ptr = 0
-    db_file_number = 0
     output = bytearray()
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
@@ -61,16 +60,20 @@ class Interpreter:
             Interpreter.input_ptr += 1
         else:
             pass
-
+    
 def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
-    # setup interpreter
+    # reset interpreter
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
     Interpreter.output = bytearray()
-    #contains positions of pointer in the beginning of cykle
+
+    # contains positions of pointer in the beginning of cykle
     cykle_stack = []
     sourcecode_len = len(sourcecode)
+    debug_file_num = 1
+    #UNIX endline
+    lf = chr(10)
 
     # find input
     input_idx = sourcecode.find('!')
@@ -115,7 +118,13 @@ def interpret_bf(sourcecode, in_memory=b'\000', in_memory_ptr=0, test=False):
             break
         elif sourcecode[idx] == '#':
             # print test
-            pass
+            with open('debug_{:02}.log'.format(debug_file_num), encoding='ASCII', mode='w') as debug_file:
+                debug_file.write('# program data' + lf + sourcecode + lf + lf)
+                debug_file.write('# memory' + lf + str(bytes(Interpreter.memory)) + lf + lf)
+                debug_file.write('# memory pointer' + lf + str(Interpreter.memory_ptr) + lf + lf)
+                debug_file.write('# output' + lf + str(bytes(Interpreter.output)) + lf + lf)
+                debug_file_num = debug_file_num + 1 if debug_file_num < 99 else 1
+                pass
         else:
             raise InvalidCodeException('Interpreter found unknown instruction \'{}\' at position {}'
                                        .format(sourcecode[idx], idx))
