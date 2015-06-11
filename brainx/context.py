@@ -9,7 +9,7 @@ UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.form
 
 # 'constant' ints
 RETURN_OK = 0
-RETURN_ERROR = 1
+RETURN_ERROR = 0
 
 LANG_BRAINLOLLER = 0
 LANG_BRAINCOPTER = 1
@@ -28,7 +28,7 @@ class Settings:
     opt_lc2f = False
     opt_f2lc = False
     opt_test = False
-    # must be str!!!
+    # must be bytes!!!
     arg_memory = b'\x00'
     arg_memory_pointer = 0
     opt_pnm = False
@@ -111,7 +111,12 @@ class Settings:
                 try:
                     if not is_opt(opts[idx + 1]):
                         # print('\n\nProcessing -m.\nGot: ' + str(opts[idx + 1]))
-                        Settings.arg_memory = opts[idx + 1]
+                        memory_str = opts[idx + 1]
+                        memory_str = memory_str[1:] if memory_str.startswith('b') else memory_str
+                        if memory_str.startswith('\'') and memory_str.endswith('\''):
+                            memory_str = memory_str[1:-1]
+                        exec('Settings.arg_memory = b\'{}\''.format(memory_str))
+                        # Settings.arg_memory = opts[idx + 1]
                         # print('Saved: ' + str(Settings.arg_memory ))
                         idx += 2
                         continue

@@ -12,6 +12,15 @@ import interpreter
 # parse options
 context.Settings.parse_opts(argv)
 
+'''
+print('\n\n\n-------\n')
+print(context.Settings.arg_memory)
+print(context.Settings.arg_memory_pointer)
+print(type(interpreter.Interpreter.memory_ptr))
+print('\n\n')
+
+print(argv)
+'''
 # remove options (don't need them already)
 # argv = [arg for arg in argv if not context.is_opt(arg)]
 #print(vars(context.Settings))
@@ -38,10 +47,10 @@ elif context.Settings.arg_source_file is not None:
 
 # run sourcecode
 
-output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, context.Settings.arg_memory_pointer,
+output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
                                   context.Settings.opt_test)
 
-
+'''
 print('source file: ')
 print(context.Settings.arg_source_file)
 print('command line:')
@@ -49,3 +58,5 @@ print(context.Settings.arg_console_sourcecode)
 print('Source code: ' + sourcecode)
 
 print('Output: "{}"'.format(bytes(output)))
+'''
+#print(output)
