@@ -59,4 +59,4 @@ print('Source code: ' + sourcecode)
 
 print('Output: "{}"'.format(bytes(output)))
 '''
-#print(output)
+print(output.decode('ASCII'), end='')

@@ -9,7 +9,7 @@ UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.form
 
 # 'constant' ints
 RETURN_OK = 0
-RETURN_ERROR = 0
+RETURN_ERROR = 1
 
 LANG_BRAINLOLLER = 0
 LANG_BRAINCOPTER = 1
@@ -151,8 +151,10 @@ class Settings:
             elif opts[idx] == '-h' or opts[idx] == '--help':
                 print(HELP)
             else:
-                print(UNKNOWN_OPTS(opts[idx]))
-                exit(RETURN_ERROR)
+                # TODO: suspitious place: uncomment and change print to throw
+                pass
+                #print(UNKNOWN_OPTS(opts[idx]))
+                #exit(RETURN_ERROR)
             idx += 1
         # argv = [arg for arg in opts if not is_opt(arg)]
         # print("ARGV::: ")
