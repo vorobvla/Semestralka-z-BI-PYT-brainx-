@@ -75,7 +75,7 @@ class Interpreter:
                 Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
                 pass
 
-def interpret_bf(sourcecode, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
+def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
@@ -84,8 +84,10 @@ def interpret_bf(sourcecode, in_memory=b'\x00', in_memory_ptr=0, test_opt=False)
 
     # contains positions of pointer in the beginning of cykle
     cykle_stack = []
-    sourcecode_len = len(sourcecode)
     Interpreter.debug_file_num = 1
+    # remove blanks (beacuse of tests, actually interpreter tolerates them)
+    sourcecode = ''.join(sourcecode_in.split())
+    sourcecode_len = len(sourcecode)
 
     # find input
     input_idx = sourcecode.find('!')
