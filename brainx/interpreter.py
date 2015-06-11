@@ -76,9 +76,9 @@ class Interpreter:
                 pass
 
 
-def interpret_bf(sourcecode, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
+def interpret_bf(sourcecode, in_memory='\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
-    Interpreter.memory = bytearray(in_memory)
+    Interpreter.memory = bytearray(in_memory, encoding='ASCII')
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
     Interpreter.output = bytearray()

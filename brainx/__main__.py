@@ -8,6 +8,7 @@ from sys import argv
 import context
 import interpreter
 
+
 # parse options
 context.Settings.parse_opts(argv)
 
@@ -29,7 +30,7 @@ elif context.Settings.arg_console_sourcecode is not None:
 
 elif context.Settings.arg_source_file is not None:
     #analyze file
-    if context.Settings.arg_source_file[-2:] == '.b':
+    if context.Settings.arg_source_file.endswith('.b'):
         #read text file
         with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
             sourcecode = file.read()
