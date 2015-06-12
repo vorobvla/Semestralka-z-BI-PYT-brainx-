@@ -5,12 +5,17 @@ __author__ = 'Vladimir Vorobyev'
 
 
 from sys import argv
+from sys import stderr
 import context
 import interpreter
+import graphic_langs
+from traceback import print_exc
 
 
 # parse options
 context.Settings.parse_opts(argv)
+
+#print(argv)
 
 '''
 print('\n\n\n-------\n')
@@ -43,11 +48,20 @@ elif context.Settings.arg_source_file is not None:
         #read text file
         with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
             sourcecode = file.read()
+    else:
+        try:
+            graphic_langs.analyze_png(context.Settings.arg_source_file)
+        except graphic_langs.PNGWrongHeaderError:
+            print_exc(file=stderr)
+            exit(4)
+        except graphic_langs.PNGNotImplementedError:
+            print_exc(file=stderr)
+            exit(8)
     pass
 
+if not context.Settings.translate_mode:
 # run sourcecode
-
-output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
+    output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
                                   context.Settings.opt_test)
 
 '''

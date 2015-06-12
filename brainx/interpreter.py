@@ -110,18 +110,6 @@ def analyze_code(sourcecode_in):
     d_end_to_start = eval('{{{}}}'.format(','.join(cykles_list_end_start)))
     return d_start_to_end, d_end_to_start
 
-'''
-will not work ;(
-hint:
-while True:
-     i = x.find('!', i, 17)
-     print(i)
-     if i == -1:
-         break
-     else:
-         i+=1
-'''
-
 def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)

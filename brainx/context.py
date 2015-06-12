@@ -3,7 +3,7 @@
 
 from os import path
 from sys import stderr
-from traceback import print_exc
+#from traceback import print_exc
 
 HELP = 'HELP!!!!!'
 USAGE = 'Usage: brainx [sourcefile] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]' \
