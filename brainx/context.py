@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # 'constant' strings
 
+from os import path
+from sys import stderr
+from traceback import print_exc
+
 HELP = 'HELP!!!!!'
 USAGE = 'Usage: brainx [sourcefile] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]' \
         '| --lc2f input_bl_bc_file [output_bf_file] |' \
@@ -165,8 +169,15 @@ class Settings:
         elif argc == 2:
             if argv[1].startswith('"') and argv[1].endswith('"'):
                 Settings.arg_console_sourcecode = argv[1][1:-1]
-            elif not argv[1].endswith('.b'):
-                Settings.arg_console_sourcecode = argv[1]
+            # TODO: if cannot find file throw exception: no file or escape "" PLZ
+            elif not path.isfile(argv[1]):
+                #try:
+                raise ArgsException('Cannot recognize argument \'{}\'. If You whant to pass file to interpreter, '
+                                    'check whether this file exists and accessible. If You want to pass brainfuck '
+                                    'source code, try to escape quotes.'.format(argv[1]))
+                #except:
+                #    print_exc(file=stderr)
+                #    exit(4)
             else:
                 Settings.arg_source_file = argv[1]
         else:
