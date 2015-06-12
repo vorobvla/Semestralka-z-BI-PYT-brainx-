@@ -75,6 +75,53 @@ class Interpreter:
                 Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
                 pass
 
+
+# Sets input to interpreter and returns dictionaties of cykles (start->end and end->start)
+def analyze_code(sourcecode_in):
+    try:
+        sourcecode, Interpreter.input = sourcecode_in.split('!', 1)
+    except ValueError:
+        sourcecode = sourcecode_in
+    stack = []
+    cykles_list_start_end = []
+    cykles_list_end_start = []
+
+    # create list of cykles (format:  'from:to')
+    for idx, token in enumerate(sourcecode):
+        if token == '[':
+            stack.append(idx)
+        elif token == ']':
+            if len(stack) == 0:
+                raise InvalidCodeException('Interpreter found illegal end of cykle instruction (\']\') at position {}'
+                                           .format(idx))
+            else:
+                start = stack.pop()
+                cykles_list_start_end.append('{}:{}'.format(start, idx))
+                cykles_list_end_start.append('{}:{}'.format(idx, start))
+
+    if len(stack) != 0:
+        raise InvalidCodeException('Interpreter found illegal start of cykle instruction (\'[\') at position {}'
+                                   .format(stack.pop()))
+
+
+    # create dictionaties of start and end of cykles
+
+    d_start_to_end = eval('{{{}}}'.format(','.join(cykles_list_start_end)))
+    d_end_to_start = eval('{{{}}}'.format(','.join(cykles_list_end_start)))
+    return d_start_to_end, d_end_to_start
+
+'''
+will not work ;(
+hint:
+while True:
+     i = x.find('!', i, 17)
+     print(i)
+     if i == -1:
+         break
+     else:
+         i+=1
+'''
+
 def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)
@@ -89,14 +136,13 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
     sourcecode = ''.join(sourcecode_in.split())
     sourcecode_len = len(sourcecode)
 
-    # find input
-    input_idx = sourcecode.find('!')
-    Interpreter.input = sourcecode[input_idx + 1:] if input_idx != -1 else ''
+    # setup input and get dictionaties for cykles
+    cykle_jump_from_start, cykle_jump_from_end = analyze_code(sourcecode)
 
     idx = 0
 
     while idx < sourcecode_len:
-        print("Processing {} at {}".format(sourcecode[idx], idx))
+        # print("Processing {} at {}".format(sourcecode[idx], idx))
         if sourcecode[idx].isspace():
             pass
         elif sourcecode[idx] == '+':
@@ -115,16 +161,13 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
             cykle_stack.append(idx)
             if Interpreter.read_cell() == 0:
                 # skip to ]
-                sourcecode.rfind(']')
+                idx = cykle_jump_from_start[idx]
             else:
                 pass
         elif sourcecode[idx] == ']':
-            if len(cykle_stack) == 0:
-                raise InvalidCodeException('Interpreter found illegal end of cykle instruction (\']\') at position {}'
-                                           .format(idx))
             if Interpreter.read_cell() != 0:
                 # skip to [
-                idx = cykle_stack.pop()
+                idx = cykle_jump_from_end[idx]
                 continue
             else:
                 cykle_stack.pop()
@@ -138,9 +181,7 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
             raise InvalidCodeException('Interpreter found unknown instruction \'{}\' at position {}'
                                        .format(sourcecode[idx], idx))
         idx += 1
-    if len(cykle_stack) != 0:
-        raise InvalidCodeException('Interpreter found illegal start of cykle instruction (\'[\') at position {}'
-                                   .format(cykle_stack.pop()))
+
     if test_opt:
         Interpreter.log_state_to_file(sourcecode)
     return Interpreter.output
