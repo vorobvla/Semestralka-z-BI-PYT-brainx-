@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from zlib import decompress
+
+class FileErrorExcaprion(Exception):
+    pass
 
 
 class PNGWrongHeaderError(Exception):
@@ -8,7 +12,7 @@ class PNGWrongHeaderError(Exception):
 class PNGNotImplementedError(Exception):
     pass
 
-btoi = lambda b : int.from_bytes(b, byteorder='big', signed=False)
+btoi = lambda b: int.from_bytes(b, byteorder='big', signed=False)
 
 
 def analyze_png(filename):
@@ -20,24 +24,51 @@ def analyze_png(filename):
             # analyze file. finish when IEND chunk found
             img_width = None
             img_heigth = None
+            data = bytes()
             while True:
-                data_len = btoi(file.read(4))
+                read = file.read(4)
+                print('READ: ' + str(read))
+                if read == b'':
+                    raise FileErrorExcaprion('Unexpected end of file')
+                data_len = btoi(read)
+                print('DATA LEN:' + str(data_len))
                 chunk = file.read(4)
                 if chunk == b'IHDR':
                     # analyze IHDR
                     img_width = btoi(file.read(4))
                     img_heigth = btoi(file.read(4))
                     other_opts = file.read(5)
+
                     if other_opts != b'\x08\x02\x00\x00\x00' and other_opts != b'\x08\x02\x00\x00\x01':
                         raise PNGNotImplementedError
-                    else:
-                        break
+                    file.read(4)
+                elif chunk == b'IDAT':
+                    # append data
+                    data += decompress(file.read(data_len))
+                    file.read(4)
                 elif chunk == b'IEND':
+                    print('REACHED END')
                     break
                 else:
-                    file.read(data_len)
-    print(data_len)
-    print(img_width)
-    print(img_heigth)
+                    # skip chunks that are not interesting for us
+                    print(file.read(data_len + 4))
+        return data, img_width, img_heigth
 
+
+# parces colorcode from binary data
+def parce_colorcode(data, w, h):
+    act_h = 0
+    img_matrix = []
+    idx = 0
+    while act_h < h:
+        act_h += 1
+        act_w = 0
+        row = []
+        while act_w < w:
+            act_w += 1
+            row.append((data[idx], data[idx + 1], data[idx + 2]))
+            idx += 3
+        img_matrix.append()
+
+    return img_matrix
 
