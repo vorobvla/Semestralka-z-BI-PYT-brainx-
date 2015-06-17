@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from zlib import decompress
 
-class FileErrorExcaprion(Exception):
+
+class FileErrorException(Exception):
     pass
 
 
@@ -15,7 +16,14 @@ class PNGNotImplementedError(Exception):
 btoi = lambda b: int.from_bytes(b, byteorder='big', signed=False)
 
 
-def analyze_png(filename):
+def obligatory_chunk(name):
+    for ch in name:
+        if not ord('A') <= ch <= ord('Z'):
+            return False
+    return True
+
+
+def process_png(filename):
     with open(filename, mode='rb') as file:
         # control if the file is PNG
         if file.read(8) != b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A':
@@ -24,12 +32,12 @@ def analyze_png(filename):
             # analyze file. finish when IEND chunk found
             img_width = None
             img_heigth = None
-            data = bytes()
+            comprimated_data = bytes()
             while True:
                 read = file.read(4)
                 print('READ: ' + str(read))
                 if read == b'':
-                    raise FileErrorExcaprion('Unexpected end of file')
+                    raise FileErrorException('Unexpected end of file')
                 data_len = btoi(read)
                 print('DATA LEN:' + str(data_len))
                 chunk = file.read(4)
@@ -42,17 +50,21 @@ def analyze_png(filename):
                     if other_opts != b'\x08\x02\x00\x00\x00' and other_opts != b'\x08\x02\x00\x00\x01':
                         raise PNGNotImplementedError
                     file.read(4)
+                    continue
                 elif chunk == b'IDAT':
                     # append data
-                    data += decompress(file.read(data_len))
+                    comprimated_data += file.read(data_len)
                     file.read(4)
                 elif chunk == b'IEND':
                     print('REACHED END')
                     break
+                elif obligatory_chunk(chunk):
+                    raise FileErrorException('Unexpected obligatory chunk {} in file {}'.format(str(chunk), filename))
                 else:
                     # skip chunks that are not interesting for us
-                    print(file.read(data_len + 4))
-        return data, img_width, img_heigth
+                    file.read(data_len + 4)
+        print(comprimated_data)
+        return decompress(comprimated_data), img_width, img_heigth
 
 
 # parces colorcode from binary data
@@ -68,7 +80,7 @@ def parce_colorcode(data, w, h):
             act_w += 1
             row.append((data[idx], data[idx + 1], data[idx + 2]))
             idx += 3
-        img_matrix.append()
+        img_matrix.append(row)
 
     return img_matrix
 
