@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from zlib import decompress
+from zlib import crc32
 
 
 class FileErrorException(Exception):
@@ -32,7 +33,7 @@ def process_png(filename):
             # analyze file. finish when IEND chunk found
             img_width = None
             img_heigth = None
-            comprimated_data = bytes()
+            comprimated_img_data = bytes()
             while True:
                 read = file.read(4)
                 print('READ: ' + str(read))
@@ -40,31 +41,37 @@ def process_png(filename):
                     raise FileErrorException('Unexpected end of file')
                 data_len = btoi(read)
                 print('DATA LEN:' + str(data_len))
-                chunk = file.read(4)
+
+                # read chunk (containing cunk name + other chunk data)
+                data = file.read(4 + data_len)
+                # read crc
+                crc = btoi(file.read(4))
+                if crc32(data) != crc:
+                    raise FileErrorException('File data currupted (CRC data mismatch)')
+                chunk = data[:4]
                 if chunk == b'IHDR':
                     # analyze IHDR
-                    img_width = btoi(file.read(4))
-                    img_heigth = btoi(file.read(4))
-                    other_opts = file.read(5)
+                    img_width = btoi(data[4:8])
+                    img_heigth = btoi(data[8:12])
+                    other_opts = data[12:17]
 
                     if other_opts != b'\x08\x02\x00\x00\x00' and other_opts != b'\x08\x02\x00\x00\x01':
                         raise PNGNotImplementedError
-                    file.read(4)
                     continue
                 elif chunk == b'IDAT':
                     # append data
-                    comprimated_data += file.read(data_len)
-                    file.read(4)
+                    comprimated_img_data += data[4:]
                 elif chunk == b'IEND':
                     print('REACHED END')
                     break
                 elif obligatory_chunk(chunk):
                     raise FileErrorException('Unexpected obligatory chunk {} in file {}'.format(str(chunk), filename))
                 else:
+                    pass
                     # skip chunks that are not interesting for us
-                    file.read(data_len + 4)
-        print(comprimated_data)
-        return decompress(comprimated_data), img_width, img_heigth
+                    #file.read(data_len + 4)
+        print(comprimated_img_data)
+        return decompress(comprimated_img_data), img_width, img_heigth
 
 
 # parces colorcode from binary data
