@@ -8,7 +8,7 @@ from sys import argv
 from sys import stderr
 import context
 import interpreter
-import graphic_langs
+from graphics import png_processor
 from traceback import print_exc
 
 
@@ -50,8 +50,8 @@ try:
             with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
                 sourcecode = file.read()
         else:
-                data, w, h, = graphic_langs.process_png(context.Settings.arg_source_file)
-                print(graphic_langs.parce_colorcode(data, w, h))
+                data, w, h, = png_processor.process_png(context.Settings.arg_source_file)
+               # print(graphic_langs.parce_colorcode(data, w, h))
         pass
 
     # TODO: UNKOMMENT!!!!
@@ -60,10 +60,10 @@ try:
     #    output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
     #                                  context.Settings.opt_test)
 
-except graphic_langs.PNGWrongHeaderError:
+except png_processor.PNGWrongHeaderError:
     print_exc(file=stderr)
     exit(4)
-except graphic_langs.PNGNotImplementedError:
+except png_processor.PNGNotImplementedError:
     print_exc(file=stderr)
     exit(8)
 '''

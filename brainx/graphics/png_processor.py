@@ -140,7 +140,7 @@ def process_png(filename):
 
 
 # parces colorcode from binary data
-def parce_colorcode(data, w, h):
+def get_image_matrix(data, w, h):
     act_h = 0
     img_matrix = []
     idx = 0
