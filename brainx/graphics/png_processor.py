@@ -86,11 +86,11 @@ def process_png(filename):
             compressed_img_data = bytes()
             while True:
                 read = file.read(4)
-                print('READ: ' + str(read))
+                #print('READ: ' + str(read))
                 if read == b'':
                     raise FileErrorException('Unexpected end of file')
                 data_len = btoi(read)
-                print('DATA LEN:' + str(data_len))
+                #print('DATA LEN:' + str(data_len))
 
                 # read chunk (containing cunk name + other chunk data)
                 data = file.read(4 + data_len)
@@ -112,7 +112,7 @@ def process_png(filename):
                     # append data
                     compressed_img_data += data[4:]
                 elif chunk == b'IEND':
-                    print('REACHED END')
+                    #print('REACHED END')
                     break
                 elif obligatory_chunk(chunk):
                     raise NotImplementedError('Unexpected obligatory chunk {} in file {}'.format(str(chunk), filename))
@@ -120,23 +120,28 @@ def process_png(filename):
                     pass
         #print(compressed_img_data)
         # decompress and defilter image data
-        decompressed_img_data = decompress(compressed_img_data)
-        row_idx = 0
-        img_data = []
-        print('DECOMPRESSED DATA, {}x{}\n-------\n'.format(img_width, img_heigth))
-        #print(decompressed_img_data)
-        decompressed_data_w = img_width * 3 + 1
-        previous_row = None
-        while row_idx < img_heigth:
-            row = decompressed_img_data[row_idx * decompressed_data_w: (row_idx + 1) * decompressed_data_w]
-            print('Processing : {}'.format(row))
-            row = (defilter(row, previous_row))
-            print('Processed : {}\n'.format(row))
-            previous_row = row
-            row_idx += 1
-        #print(img_data)
-        print('-------')
-        return img_data, img_width, img_heigth
+        return process_decompressed_png_data(decompress(compressed_img_data), img_width, img_heigth), img_width, \
+            img_heigth
+
+
+def process_decompressed_png_data(data, img_width, img_heigth):
+    row_idx = 0
+    img_data = []
+    #print('DECOMPRESSED DATA, {}x{}\n-------\n'.format(img_width, img_heigth))
+    #print(decompressed_img_data)
+    decompressed_data_w = img_width * 3 + 1
+    previous_row = None
+    while row_idx < img_heigth:
+        row = data[row_idx * decompressed_data_w: (row_idx + 1) * decompressed_data_w]
+        #print('Processing : {}'.format(row))
+        row = (defilter(row, previous_row))
+        img_data.append(row)
+        #print('Processed : {}\n'.format(row))
+        previous_row = row
+        row_idx += 1
+    #print(img_data)
+    #print('-------')
+    return img_data
 
 
 # parces colorcode from binary data
