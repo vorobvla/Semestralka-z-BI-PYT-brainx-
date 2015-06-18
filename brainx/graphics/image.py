@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 
-LANG_BRAINLOLLER = 0
-LANG_BRAINCOPTER = 1
-
 
 class Image:
     width = 0
     heigth = 0
-    lang = None
     content = []
 
     # data is array of byte strings representing data from png
     def __init__(self, data, width, heigth, ):
         self.width = width
         self.heigth = heigth
-        self.lang = LANG_BRAINLOLLER
         # bulid 2d array of content
         for row in data:
             img_row = []
@@ -30,3 +25,6 @@ class Image:
         for row in self.content:
             output += '    {},\n'.format(row)
         return '[\n{}]'.format(output)
+
+    def get_px(self, px):
+        return self.content[px[0]][px[1]]

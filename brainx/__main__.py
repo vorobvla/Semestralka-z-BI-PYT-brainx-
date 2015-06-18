@@ -8,6 +8,7 @@ from sys import argv
 from sys import stderr
 import context
 from lang import interpreter
+from lang import translater
 from graphics import png_processor
 from graphics import image
 from traceback import print_exc
@@ -45,6 +46,7 @@ try:
         sourcecode = context.Settings.arg_console_sourcecode
 
     elif context.Settings.arg_source_file is not None:
+        translater.lc_to_f()
         #analyze file
         if context.Settings.arg_source_file.endswith('.b'):
             #read text file
