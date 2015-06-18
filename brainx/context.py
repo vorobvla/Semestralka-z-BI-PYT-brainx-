@@ -69,6 +69,7 @@ class Settings:
 
                 elif opts[idx] == '--lc2f':
                     Settings.translate_mode = True
+                    Settings.opt_lc2f = True
                     try:
                         if is_opt(opts[idx+1]):
                             raise ArgsException(OPT_REQIRES_AT_LEAST_ONE_ARG('--lc2f'))
@@ -90,10 +91,14 @@ class Settings:
                     idx += 1
                     i_is_set = False
                     o_is_set = False
+                    Settings.translate_mode = True
+                    Settings.opt_f2lc = True
                     # idx must pint on a supposed subopt at the beginning of every iteration
                     while True:
                         try:
                             if opts[idx] == '-i':
+                                if i_is_set:
+                                    raise OptsException(DUPLICATE_OPT('--f2lc -i'))
                                 # skip -i
                                 idx += 1
                                 #process arg1 (input bf)
@@ -113,6 +118,8 @@ class Settings:
                                 except IndexError:
                                     break
                             elif opts[idx] == '-o':
+                                if o_is_set:
+                                    raise OptsException(DUPLICATE_OPT('--f2lc -o'))
                                 # skip -o
                                 idx += 1
                                 if is_opt(opts[idx]):
