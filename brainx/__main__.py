@@ -5,29 +5,19 @@ __author__ = 'Vladimir Vorobyev'
 
 
 from sys import argv
-from sys import stderr
 import context
 from lang import interpreter
 from lang import translater
 from graphics import png_processor
 from graphics import image
 from traceback import print_exc
+from sys import stderr
 
 
 # parse options
 context.Settings.parse_opts(argv)
 
-#print(argv)
 
-'''
-print('\n\n\n-------\n')
-print(context.Settings.arg_memory)
-print(context.Settings.arg_memory_pointer)
-print(type(interpreter.Interpreter.memory_ptr))
-print('\n\n')
-
-print(argv)
-'''
 try:
     # remove options (don't need them already)
     # argv = [arg for arg in argv if not context.is_opt(arg)]
