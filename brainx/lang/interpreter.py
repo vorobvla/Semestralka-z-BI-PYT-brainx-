@@ -13,6 +13,7 @@ class Interpreter:
     input_ptr = 0
     output = bytearray()
     debug_file_num = 1
+    rgb_input = None
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
     read_cell = lambda: Interpreter.memory[Interpreter.memory_ptr]
@@ -73,6 +74,8 @@ class Interpreter:
                 debug_file.write('# memory pointer' + lf + str(Interpreter.memory_ptr) + lf + lf)
                 debug_file.write('# output' + lf + str(bytes(Interpreter.output)) + lf + lf)
                 Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
+                if Interpreter.rgb_input is not None:
+                    debug_file.write('# RGB input' + lf + Interpreter.rgb_input + lf + lf)
                 pass
 
 
@@ -110,12 +113,13 @@ def analyze_code(sourcecode_in):
     d_end_to_start = eval('{{{}}}'.format(','.join(cykles_list_end_start)))
     return d_start_to_end, d_end_to_start
 
-def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False):
+def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None):
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
     Interpreter.tape_len = len(Interpreter.memory)
     Interpreter.output = bytearray()
+    Interpreter.rgb_input = rgb_input
 
     # contains positions of pointer in the beginning of cykle
     cykle_stack = []

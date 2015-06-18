@@ -32,6 +32,7 @@ try:
     # remove options (don't need them already)
     # argv = [arg for arg in argv if not context.is_opt(arg)]
     #print(vars(context.Settings))
+    rgb_in = None
     if context.Settings.opt_f2lc:
         print('run f2lc translater')
 
@@ -54,6 +55,7 @@ try:
         else:
                 img = png_processor.process_png(context.Settings.arg_source_file)
                 sourcecode = translater.lc_to_f(img)
+                rgb_in = img.to_text()
                # print(graphic_langs.parce_colorcode(data, w, h))
         pass
 
@@ -61,7 +63,7 @@ try:
     if not context.Settings.translate_mode:
         #run sourcecode
         output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
-                                      context.Settings.opt_test)
+                                      context.Settings.opt_test, rgb_in)
         print(output.decode('ASCII'), end='')
 
 
