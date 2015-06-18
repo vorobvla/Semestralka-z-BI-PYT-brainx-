@@ -19,43 +19,45 @@ context.Settings.parse_opts(argv)
 
 
 try:
-    # remove options (don't need them already)
-    # argv = [arg for arg in argv if not context.is_opt(arg)]
-    #print(vars(context.Settings))
-    rgb_in = None
-    if context.Settings.opt_f2lc:
-        print('run f2lc translater')
+    # run as translater
+    if context.Settings.translate_mode:
+        if context.Settings.opt_f2lc:
+            print('run f2lc translater')
 
-    elif context.Settings.opt_lc2f:
-        print('run lc2f translater')
+        elif context.Settings.opt_lc2f:
+            print('run lc2f translater')
 
-    elif context.Settings.interactive_mode:
-        #read input
-        sourcecode = input('Please, insert brainfuck code: ')
-
-    elif context.Settings.arg_console_sourcecode is not None:
-        sourcecode = context.Settings.arg_console_sourcecode
-
-    elif context.Settings.arg_source_file is not None:
-        #analyze file
-        if context.Settings.arg_source_file.endswith('.b'):
-            #read text file
-            with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
-                sourcecode = file.read()
-        else:
+    # run as interpreter
+    else:
+        #defined here to call interpret_bf in one place
+        rgb_in = None
+        # retrieve source code
+        # from user input
+        if context.Settings.interactive_mode:
+            #read input
+            sourcecode = input('Please, insert brainfuck code: ')
+        # from console
+        elif context.Settings.arg_console_sourcecode is not None:
+            sourcecode = context.Settings.arg_console_sourcecode
+        # from file ...
+        elif context.Settings.arg_source_file is not None:
+            # ... from text file .b
+            if context.Settings.arg_source_file.endswith('.b'):
+                with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
+                    sourcecode = file.read()
+            else:
+            # from file that supposed to be an image file (name does not end with .b)
                 img = png_processor.process_png(context.Settings.arg_source_file)
                 sourcecode = translater.lc_to_f(img)
                 rgb_in = img.to_text()
-               # print(graphic_langs.parce_colorcode(data, w, h))
-        pass
+            pass
 
-    # TODO: UNKOMMENT!!!!
-    if not context.Settings.translate_mode:
-        #run sourcecode
+        # run sourcecode
         output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
                                       context.Settings.opt_test, rgb_in)
+        # print output
         print(output.decode('ASCII'), end='')
-
+    exit(context.RETURN_OK)
 
 except png_processor.PNGWrongHeaderError:
     print_exc(file=stderr)
@@ -63,13 +65,4 @@ except png_processor.PNGWrongHeaderError:
 except png_processor.PNGNotImplementedError:
     print_exc(file=stderr)
     exit(8)
-'''
-print('source file: ')
-print(context.Settings.arg_source_file)
-print('command line:')
-print(context.Settings.arg_console_sourcecode)
-print('Source code: ' + sourcecode)
-
-print('Output: "{}"'.format(bytes(output)))
-'''
 

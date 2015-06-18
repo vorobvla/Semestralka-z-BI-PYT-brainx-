@@ -8,7 +8,7 @@ from traceback import print_exc
 
 HELP = 'HELP!!!!!'
 USAGE = '''Usage:
-    Interpreter:    brainx [sourcefile] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]
+    Interpreter:    brainx [sourcefile | "brainfuck_code"] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]
     Translater:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] | --f2lc -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
 
 UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.format(unknwn_opt) + USAGE
