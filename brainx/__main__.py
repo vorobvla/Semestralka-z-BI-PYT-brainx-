@@ -7,7 +7,7 @@ __author__ = 'Vladimir Vorobyev'
 from sys import argv
 from sys import stderr
 import context
-import interpreter
+from lang import interpreter
 from graphics import png_processor
 from graphics import image
 from traceback import print_exc
@@ -57,13 +57,12 @@ try:
         pass
 
     # TODO: UNKOMMENT!!!!
-    #if not context.Settings.translate_mode:
-    # run sourcecode
-    #    output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
-    #                                  context.Settings.opt_test)
+    if not context.Settings.translate_mode:
+        #run sourcecode
+        output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
+                                      context.Settings.opt_test)
+        print(output.decode('ASCII'), end='')
 
-# TODO: UNKOMMENT!!!!
-#print(output.decode('ASCII'), end='')
 
 except png_processor.PNGWrongHeaderError:
     print_exc(file=stderr)
