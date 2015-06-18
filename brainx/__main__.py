@@ -25,7 +25,14 @@ try:
             print('run f2lc translater')
 
         elif context.Settings.opt_lc2f:
-            print('run lc2f translater')
+            sourcecode = translater.lc_to_f(png_processor.process_png(context.Settings.arg_input_bl_bc_file))
+            if context.Settings.arg_output_bf_file is None:
+                print(sourcecode)
+            else:
+                if not context.Settings.arg_output_bf_file.endswith('.b'):
+                    context.Settings.arg_output_bf_file += '.b'
+                with open(context.Settings.arg_output_bf_file, encoding='ASCII', mode='w') as file:
+                    file.write(sourcecode)
 
     # run as interpreter
     else:
@@ -46,7 +53,7 @@ try:
                 with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
                     sourcecode = file.read()
             else:
-            # from file that supposed to be an image file (name does not end with .b)
+            # ... from file that supposed to be an image file (name does not end with .b)
                 img = png_processor.process_png(context.Settings.arg_source_file)
                 sourcecode = translater.lc_to_f(img)
                 rgb_in = img.to_text()
