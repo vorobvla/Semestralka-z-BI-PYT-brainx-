@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from maintainance import logger
 
 
 class InvalidCodeException(Exception):
@@ -66,8 +67,10 @@ class Interpreter:
     # flush test info to debug file
     @staticmethod
     def log_state_to_file(sourcecode):
-        #UNIX endline
-        lf = chr(10)
+        logger.Logger.log_to_file(program_data=sourcecode, memory=str(bytes(Interpreter.memory)),
+                           memory_pointer = str(Interpreter.memory_ptr), output=str(bytes(Interpreter.output)),
+                           rgb_input=Interpreter.rgb_input )
+        '''
         with open('debug_{:02}.log'.format(Interpreter.debug_file_num), encoding='ASCII', mode='w') as debug_file:
                 debug_file.write('# program data' + lf + sourcecode + lf + lf)
                 debug_file.write('# memory' + lf + str(bytes(Interpreter.memory)) + lf + lf)
@@ -76,7 +79,7 @@ class Interpreter:
                 Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
                 if Interpreter.rgb_input is not None:
                     debug_file.write('# RGB input' + lf + Interpreter.rgb_input + lf + lf)
-                pass
+                pass'''
 
 
 # Sets input to interpreter and returns dictionaties of cykles (start->end and end->start)

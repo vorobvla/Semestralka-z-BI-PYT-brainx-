@@ -5,13 +5,15 @@ __author__ = 'Vladimir Vorobyev'
 
 
 from sys import argv
-import context
+from maintainance import context
+from maintainance import logger
 from lang import interpreter
 from lang import translater
 from graphics import png_processor
 from graphics import image
 from traceback import print_exc
 from sys import stderr
+#from  import logger
 
 
 # parse options
@@ -21,18 +23,24 @@ context.Settings.parse_opts(argv)
 try:
     # run as translater
     if context.Settings.translate_mode:
+        # --f2lc
         if context.Settings.opt_f2lc:
             print('run f2lc translater')
 
+        # --lc2f
         elif context.Settings.opt_lc2f:
-            sourcecode = translater.lc_to_f(png_processor.process_png(context.Settings.arg_input_bl_bc_file))
+            img = png_processor.process_png(context.Settings.arg_input_bl_bc_file)
+            bf_code = translater.lc_to_f(img)
             if context.Settings.arg_output_bf_file is None:
-                print(sourcecode)
+                print(bf_code)
             else:
                 if not context.Settings.arg_output_bf_file.endswith('.b'):
                     context.Settings.arg_output_bf_file += '.b'
                 with open(context.Settings.arg_output_bf_file, encoding='ASCII', mode='w') as file:
-                    file.write(sourcecode)
+                    file.write(bf_code)
+            # print debug file
+            if context.Settings.opt_test:
+                logger.Logger.log_to_file(program_data=bf_code, rgb_output=img.to_text())
 
     # run as interpreter
     else:

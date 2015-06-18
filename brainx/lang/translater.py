@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from graphics import image
 
-
 def is_b_loller(img_matrix):
     for row in img_matrix:
         for px in row:
