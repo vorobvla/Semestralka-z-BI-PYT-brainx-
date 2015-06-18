@@ -9,6 +9,7 @@ from sys import stderr
 import context
 import interpreter
 from graphics import png_processor
+from graphics import image
 from traceback import print_exc
 
 
@@ -50,7 +51,8 @@ try:
             with open(context.Settings.arg_source_file, encoding='ASCII', mode='r') as file:
                 sourcecode = file.read()
         else:
-                data, w, h, = png_processor.process_png(context.Settings.arg_source_file)
+                img = png_processor.process_png(context.Settings.arg_source_file)
+                print(img.to_text())
                # print(graphic_langs.parce_colorcode(data, w, h))
         pass
 
@@ -59,6 +61,9 @@ try:
     # run sourcecode
     #    output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
     #                                  context.Settings.opt_test)
+
+# TODO: UNKOMMENT!!!!
+#print(output.decode('ASCII'), end='')
 
 except png_processor.PNGWrongHeaderError:
     print_exc(file=stderr)
@@ -76,5 +81,3 @@ print('Source code: ' + sourcecode)
 print('Output: "{}"'.format(bytes(output)))
 '''
 
-# TODO: UNKOMMENT!!!!
-#print(output.decode('ASCII'), end='')

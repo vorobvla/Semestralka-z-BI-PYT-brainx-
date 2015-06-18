@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 from zlib import decompress
 from zlib import crc32
-
-LANG_BRAINLOLLER = 0
-LANG_BRAINCOPTER = 1
+from . import image
 
 
 class FileErrorException(Exception):
@@ -28,18 +26,19 @@ def obligatory_chunk(name):
     return True
 
 
-# needed for defilter, copypaste from lections
+# needed for defilter, (almost) copypaste from w3.org
 def paeth(a, b, c):
-    p = a + b - c
+    p = (a + b - c)
     pa = abs(p - a)
     pb = abs(p - b)
     pc = abs(p - c)
     if pa <= pb and pa <= pc:
-        return a
+        pr = a
     elif pb <= pc:
-        return b
+        pr = b
     else:
-        return c
+        pr = c
+    return pr
 
 
 # prev_row does not contain type!
@@ -48,14 +47,15 @@ def defilter(row, prev_row):
     filt_type = row[0]
     row = row[1:]
     output_row = bytearray()
+    #print('PREW ROW:::{}'.format(prev_row))
     # previous pixels (as defined in w3 specification)
-    a = lambda idx: 0 if idx - 3 < 0 else row[idx - 3]
+    a = lambda idx: 0 if idx - 3 < 0 else output_row[idx - 3]
     b = lambda idx: 0 if prev_row is None else prev_row[idx]
     c = lambda idx: 0 if idx - 3 < 0 or prev_row is None else prev_row[idx - 3]
     #print('Type: {}'.format(filt_type))
 
     if filt_type == 0:
-        return row
+        output_row = bytearray(row)
     elif filt_type == 1:
         for i, x in enumerate(row):
             output_row.append((x + a(i)) % 256)
@@ -67,11 +67,11 @@ def defilter(row, prev_row):
             output_row.append((x + (a(i) + b(i)) // 2) % 256)
     elif filt_type == 4:
         for i, x in enumerate(row):
-            #print('i = {}, a = {}, b = {}, c = {}'.format(i, a(i), b(i), c(i)))
             output_row.append((x + paeth(a(i), b(i), c(i))) % 256)
     else:
         raise FileErrorException('Illegal filtration type {} occured'.format(filt_type))
-    return bytes(output_row)
+    #print('{}:: {}'.format(filt_type, output_row))
+    return output_row
 
 
 def process_png(filename):
@@ -120,27 +120,21 @@ def process_png(filename):
                     pass
         #print(compressed_img_data)
         # decompress and defilter image data
-        return process_decompressed_png_data(decompress(compressed_img_data), img_width, img_heigth), img_width, \
-            img_heigth
+        data = process_decompressed_png_data(decompress(compressed_img_data), img_width, img_heigth)
+        return image.Image(data, img_width, img_heigth)
 
 
 def process_decompressed_png_data(data, img_width, img_heigth):
     row_idx = 0
     img_data = []
-    #print('DECOMPRESSED DATA, {}x{}\n-------\n'.format(img_width, img_heigth))
-    #print(decompressed_img_data)
     decompressed_data_w = img_width * 3 + 1
     previous_row = None
     while row_idx < img_heigth:
         row = data[row_idx * decompressed_data_w: (row_idx + 1) * decompressed_data_w]
-        #print('Processing : {}'.format(row))
         row = (defilter(row, previous_row))
         img_data.append(row)
-        #print('Processed : {}\n'.format(row))
         previous_row = row
         row_idx += 1
-    #print(img_data)
-    #print('-------')
     return img_data
 
 
