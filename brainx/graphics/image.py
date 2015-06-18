@@ -26,5 +26,5 @@ class Image:
             output += '    {},\n'.format(row)
         return '[\n{}]'.format(output)
 
-    def get_px(self, px):
-        return self.content[px[0]][px[1]]
+    def get_px(self, y, x):
+        return self.content[y][x]

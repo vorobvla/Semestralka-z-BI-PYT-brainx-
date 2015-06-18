@@ -46,7 +46,6 @@ try:
         sourcecode = context.Settings.arg_console_sourcecode
 
     elif context.Settings.arg_source_file is not None:
-        translater.lc_to_f()
         #analyze file
         if context.Settings.arg_source_file.endswith('.b'):
             #read text file
@@ -54,7 +53,7 @@ try:
                 sourcecode = file.read()
         else:
                 img = png_processor.process_png(context.Settings.arg_source_file)
-                print(img.to_text())
+                sourcecode = translater.lc_to_f(img)
                # print(graphic_langs.parce_colorcode(data, w, h))
         pass
 
