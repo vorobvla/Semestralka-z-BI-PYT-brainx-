@@ -6,8 +6,7 @@ class Logger():
 
     # all args must be strings (for conveniance)
     @staticmethod
-    def log_to_file(program_data=None, memory=None, memory_pointer=None, output=None, rgb_input=None,
-                    rgb_input_not_bl=None, rgb_output=None):
+    def log_to_file(program_data=None, memory=None, memory_pointer=None, output=None, rgb_input=None, rgb_output=None):
         # UNIX endline
         lf = chr(10)
         with open('debug_{:02}.log'.format(Logger.file_num), encoding='ASCII', mode='w') as debug_file:
@@ -20,11 +19,7 @@ class Logger():
             if memory is not None:
                 debug_file.write('# output' + lf + output + lf + lf)
             if rgb_input is not None:
-                debug_file.write('# RGB input' + lf + rgb_input)
-                if rgb_input_not_bl is not None:
-                    debug_file.write(lf + rgb_input_not_bl + lf + lf)
-                else:
-                    debug_file.write(lf + lf)
+                debug_file.write('# RGB input' + lf + rgb_input + lf + lf)
             if rgb_output is not None:
                 debug_file.write('# RGB output' + lf + rgb_output + lf + lf)
 

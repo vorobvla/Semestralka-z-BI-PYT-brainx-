@@ -2,6 +2,7 @@
 from graphics import image
 from math import sqrt
 from math import ceil
+from maintainance import logger
 
 
 def is_b_loller(img_matrix):
@@ -64,6 +65,14 @@ def lc_to_f(source_img):
 
     return bf_sourcecode
 
+def turn_around_and_write(img, turn, write):
+    img.write_to_pos(write)
+    turn()
+    img.move_pos()
+    img.write_to_pos(write)
+    turn()
+    img.move_pos()
+
 def f_to_l(bf_sourcecode):
     instr = {
         '>' : (255, 0, 0),
@@ -80,30 +89,19 @@ def f_to_l(bf_sourcecode):
     # image is going to be quare + 2 px for IP rotation
     side = ceil(sqrt(len(bf_sourcecode))) + 2
     bl_img = image.Image(side, side)
-    # make shure  R L will not occur
-    bf_sourcecode.replace('R', '')
-    bf_sourcecode.replace('L', '')
 
     for token in bf_sourcecode:
         # analyze postition & set bl instr if needed
         if bl_img.get_move_direction() == 'e' and bl_img.pos_x == side - 1:
-            bl_img.write_to_pos(instr['R'])
-            bl_img.turn_r()
-            bl_img.move_pos()
-            bl_img.write_to_pos(instr['R'])
-            bl_img.turn_r()
-            bl_img.move_pos()
+            # turn adound and write 'rotate IP to the right' on proper places
+            turn_around_and_write(bl_img, bl_img.turn_r, (0, 255, 255))
         elif bl_img.get_move_direction() == 'w' and bl_img.pos_x == 0:
-            bl_img.write_to_pos(instr['L'])
-            bl_img.turn_l()
-            bl_img.move_pos()
-            bl_img.write_to_pos(instr['L'])
-            bl_img.turn_l()
-            bl_img.move_pos()
+            # turn adound and write 'rotate IP to the right left' on proper places
+            turn_around_and_write(bl_img, bl_img.turn_l, (0, 128, 128))
 
         # process tokens from source
         if token == '#':
-            pass #TODO: debug log
+            logger.Logger.log_to_file(program_data=bf_sourcecode, rgb_output=bl_img.to_text())
         elif token == '!':
             break
         else:
