@@ -27,6 +27,7 @@ OPT_NOT_FOR_TRANSLATE_MOD = lambda opt: 'Option {} is not suttable for tarnsalti
                                         'options --lc2f or --f2lc).'.format(opt)
 OPT_REQIRES_JUST_ONE_ARG = lambda opt: 'Option {} reqires one argument.'.format(opt)
 OPT_REQIRES_AT_LEAST_ONE_ARG = lambda opt: 'Option {} reqires at least one argument.'.format(opt)
+CANNOT_ACCESS_FILE = lambda file: 'Connot access file named \'{}\''.format(file)
 
 class OptsException(Exception):
     pass
@@ -74,6 +75,8 @@ class Settings:
                         if is_opt(opts[idx+1]):
                             raise ArgsException(OPT_REQIRES_AT_LEAST_ONE_ARG('--lc2f'))
                         Settings.arg_input_bl_bc_file = opts[idx+1]
+                        if not path.isfile(Settings.arg_input_bl_bc_file):
+                            raise ArgsException(CANNOT_ACCESS_FILE(Settings.arg_input_bl_bc_file))
                     except IndexError:
                         raise ArgsException(OPT_REQIRES_AT_LEAST_ONE_ARG('--lc2f'))
                     # skip --lc2f and it's 1st arg
@@ -105,6 +108,8 @@ class Settings:
                                 if is_opt(opts[idx]):
                                     raise ArgsException(OPT_REQIRES_AT_LEAST_ONE_ARG('--f2lc -i'))
                                 Settings.arg_input_bf_file = opts[idx]
+                                if not path.isfile(Settings.arg_input_bf_file):
+                                    raise ArgsException(CANNOT_ACCESS_FILE(Settings.arg_input_bf_file))
                                 i_is_set = True
                                 # skip arg1
                                 idx += 1
@@ -115,6 +120,8 @@ class Settings:
                                         Settings.arg_input_png_file = opts[idx]
                                         # skip arg2
                                         idx += 1
+                                    if not path.isfile(Settings.arg_input_png_file):
+                                        raise ArgsException(CANNOT_ACCESS_FILE(Settings.arg_input_png_file))
                                 except IndexError:
                                     break
                             elif opts[idx] == '-o':
@@ -123,7 +130,7 @@ class Settings:
                                 # skip -o
                                 idx += 1
                                 if is_opt(opts[idx]):
-                                    raise ArgsException(OPT_REQIRES_AT_ONE_ARG('--f2lc -o'))
+                                    raise ArgsException(OPT_REQIRES_JUST_ONE_ARG('--f2lc -o'))
                                 Settings.arg_output_bl_bc_file = opts[idx]
                                 o_is_set = True
                                 # skip arg3
