@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from zlib import crc32
+from zlib import compress
+
+itob = lambda i, offset: i.to_bytes(offset, byteorder='big')
 
 
 class Image:
@@ -28,3 +32,27 @@ class Image:
 
     def get_px(self, y, x):
         return self.content[y][x]
+
+    def to_png(self, filename):
+
+        with open(filename, mode='wb') as file:
+
+            def write_chunk(name, data):
+                # length of data, hdr, data, crc(name + data)
+                file.write(itob(len(data), 4) + name + data + itob(crc32(name + data), 4))
+            file.write(b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A')
+            # write IHDR
+            write_chunk(b'IHDR', itob(self.width, 4) + itob(self.heigth, 4) + b'\x08\x02\x00\x00\x00')
+            # write IDAT (just one chunk yet)
+            data = bytearray()
+            for row in self.content:
+            # filtering is 0 on every row
+                data.append(0)
+                for px in row:
+                    data.append(px[0])
+                    data.append(px[1])
+                    data.append(px[2])
+            write_chunk(b'IDAT', compress(data))
+            # write IEND
+            write_chunk(b'IEND', b'')
+
