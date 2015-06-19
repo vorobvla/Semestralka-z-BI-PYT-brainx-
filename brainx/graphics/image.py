@@ -21,6 +21,16 @@ class Image:
     turn_l_d = {(1, 0): (0, -1), (0, -1): (-1, 0), (-1, 0): (0, 1), (0, 1): (1, 0)}
     # east, north, west, south
     delta_name = {(1, 0): 'e', (0, -1): 'n', (-1, 0): 'w', (0, 1): 's'}
+    # extend when moving pos out of bounds?
+    autoextend = False
+
+    # append a black line to the bottom
+    def extend(self):
+        row = []
+        for px in range(self.width):
+            row.append((0, 0, 0))
+        self.content.append(row)
+        self.heigth += 1
 
     # content is 2d array of byte strings representing data from png or None if we whant black image of given size
     def __init__(self, width, heigth, content=None):
@@ -28,12 +38,11 @@ class Image:
         self.heigth = heigth
         # bulid 2d array of content
         if content is None:
+            # heigth must be 0 because we whant to extend till appropriate size
+            self.heigth = 0
             # empty if no content given
             for row in range(heigth):
-                img_row = []
-                for px in range(width):
-                    img_row.append((0, 0, 0))
-                self.content.append(img_row)
+                self.extend()
         else:
             for row in content:
                 img_row = []
@@ -56,6 +65,8 @@ class Image:
     # input must be tuple of len = 3
     def write_to_pos(self, in_px):
         self.content[self.pos_y][self.pos_x] = in_px
+        #print('write to: x = {} / {}, y = {} / {} dir = {}'.format(self.pos_x, self.width, self.pos_y, self.heigth, self.delta_name[self.delta_xy]))
+
 
     # new_delta = ip_turn_x[old_delta]
     def turn_r(self):
@@ -67,7 +78,14 @@ class Image:
     def move_pos(self):
         self.pos_x += self.delta_xy[0]
         self.pos_y += self.delta_xy[1]
-        if (not 0 <= self.pos_x < self.width) or (not 0 <= self.pos_y < self.heigth):
+        # may autoextend down
+        if not self.pos_y < self.heigth:
+            if self.autoextend:
+                # print(self.content)
+                self.extend()
+            else:
+                raise OutOfBoardersException('x = {}, y = {}'.format(self.pos_x, self.pos_y))
+        if (not 0 <= self.pos_x < self.width) or (not 0 <= self.pos_y):
             raise OutOfBoardersException('x = {}, y = {}'.format(self.pos_x, self.pos_y))
 
     def get_move_direction(self):

@@ -99,8 +99,8 @@ def f_to_lc(bf_sourcecode, img=None):
         def write_instr(instr_key):
             img.write_to_pos(instrs[instr_key])
         # image is going to be square + 2 px for IP rotation
-        side = ceil(sqrt(len(bf_sourcecode))) + 2
-        img = image.Image(side, side)
+        #side = ceil(sqrt(len(bf_sourcecode))) + 2
+        img = image.Image(round(sqrt(len(bf_sourcecode))), 1)
     else:
         # copter
         instrs = { '>' : 0, '<' : 1, '+' : 2, '-' : 3, '.' : 4, ',' : 5,
@@ -123,6 +123,8 @@ def f_to_lc(bf_sourcecode, img=None):
         # check if code will fit into image
             if bf_no_extentions_len(bf_sourcecode) > ((img.width - 2) * img.heigth) + 1:
                 raise TranslationError('Program is not foing to fit in the image')
+    # let the img to extend if program is longer then it
+    img.autoextend = True
     for token in bf_sourcecode:
         # turn and leave proper instruction if needed
         deal_with_boarder('RT', 'LT')
@@ -141,7 +143,8 @@ def f_to_lc(bf_sourcecode, img=None):
                 img.move_pos()
             except KeyError:
                 pass
-
+    img.autoextend = False
+    '''
     # fill rest of image with NOP
     while True:
         try:
@@ -150,9 +153,9 @@ def f_to_lc(bf_sourcecode, img=None):
             write_instr('NOP')
             img.move_pos()
         except image.OutOfBoardersException:
-            break
+            break'''
 
-
+    #print(img.to_text())
     return img
 
 
