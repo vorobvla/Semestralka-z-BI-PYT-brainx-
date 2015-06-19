@@ -121,7 +121,7 @@ def process_png(filename):
         #print(compressed_img_data)
         # decompress and defilter image data
         data = process_decompressed_png_data(decompress(compressed_img_data), img_width, img_heigth)
-        return image.Image(data, img_width, img_heigth)
+        return image.Image(img_width, img_heigth, content=data)
 
 
 def process_decompressed_png_data(data, img_width, img_heigth):

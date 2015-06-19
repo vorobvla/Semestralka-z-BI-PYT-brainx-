@@ -25,7 +25,11 @@ try:
     if context.Settings.translate_mode:
         # --f2lc
         if context.Settings.opt_f2lc:
-            print('run f2lc translater')
+            # retrieve bf source
+            with open(context.Settings.arg_input_bf_file, encoding='ASCII', mode='r') as file:
+                    bfcode = file.read()
+            img = translater.f_to_l(bfcode)
+            img.to_png(context.Settings.arg_output_bl_bc_file)
 
         # --lc2f
         elif context.Settings.opt_lc2f:

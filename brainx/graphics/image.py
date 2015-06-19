@@ -19,20 +19,30 @@ class Image:
     delta_xy = (1, 0)
     turn_r_d = {(1, 0): (0, 1), (0, 1): (-1, 0), (-1, 0): (0, -1), (0, -1): (1, 0)}
     turn_l_d = {(1, 0): (0, -1), (0, -1): (-1, 0), (-1, 0): (0, 1), (0, 1): (1, 0)}
+    # east, north, west, south
+    delta_name = {(1, 0): 'e', (0, -1): 'n', (-1, 0): 'w', (0, 1): 's'}
 
-    # content is 2d array of byte strings representing data from png
-    def __init__(self, content, width, heigth):
+    # content is 2d array of byte strings representing data from png or None if we whant black image of given size
+    def __init__(self, width, heigth, content=None):
         self.width = width
         self.heigth = heigth
         # bulid 2d array of content
-        for row in content:
-            img_row = []
-            for i in range(0, width * 3, 3):
-                pixel = (row[i], row[i + 1], row[i + 2])
-                # TODO: analyze lang
-                #if pixel != (255, 0, 0) or pixel != (128, 0, 0) or pixel != (,,)
-                img_row.append(pixel)
-            self.content.append(img_row)
+        if content is None:
+            # empty if no content given
+            for row in range(heigth):
+                img_row = []
+                for px in range(width):
+                    img_row.append((0, 0, 0))
+                self.content.append(img_row)
+        else:
+            for row in content:
+                img_row = []
+                for i in range(0, width * 3, 3):
+                    pixel = (row[i], row[i + 1], row[i + 2])
+                    # TODO: analyze lang
+                    #if pixel != (255, 0, 0) or pixel != (128, 0, 0) or pixel != (,,)
+                    img_row.append(pixel)
+                self.content.append(img_row)
 
     def to_text(self):
         output = ''
@@ -47,9 +57,6 @@ class Image:
     def write_to_pos(self, in_px):
         self.content[self.pos_y][self.pos_x] = in_px
 
-    def get_px(self, y, x):
-        return self.content[y][x]
-
     # new_delta = ip_turn_x[old_delta]
     def turn_r(self):
         self.delta_xy = self.turn_r_d[self.delta_xy]
@@ -61,7 +68,10 @@ class Image:
         self.pos_x += self.delta_xy[0]
         self.pos_y += self.delta_xy[1]
         if (not 0 <= self.pos_x < self.width) or (not 0 <= self.pos_y < self.heigth):
-            raise OutOfBoardersException
+            raise OutOfBoardersException('x = {}, y = {}'.format(self.pos_x, self.pos_y))
+
+    def get_move_direction(self):
+        return self.delta_name[self.delta_xy]
 
     def to_png(self, filename):
 
