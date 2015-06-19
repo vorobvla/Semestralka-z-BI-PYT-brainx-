@@ -28,7 +28,10 @@ try:
             # retrieve bf source
             with open(context.Settings.arg_input_bf_file, encoding='ASCII', mode='r') as file:
                     bfcode = file.read()
-            img = translater.f_to_l(bfcode)
+            input_img = None
+            if context.Settings.arg_input_png_file is not None:
+                input_img = png_processor.process_png(context.Settings.arg_input_png_file)
+            img = translater.f_to_lc(bfcode, input_img)
             img.to_png(context.Settings.arg_output_bl_bc_file)
 
         # --lc2f

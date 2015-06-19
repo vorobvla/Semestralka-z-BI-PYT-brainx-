@@ -70,16 +70,6 @@ class Interpreter:
         logger.Logger.log_to_file(program_data=sourcecode, memory=str(bytes(Interpreter.memory)),
                            memory_pointer = str(Interpreter.memory_ptr), output=str(bytes(Interpreter.output)),
                            rgb_input=Interpreter.rgb_input )
-        '''
-        with open('debug_{:02}.log'.format(Interpreter.debug_file_num), encoding='ASCII', mode='w') as debug_file:
-                debug_file.write('# program data' + lf + sourcecode + lf + lf)
-                debug_file.write('# memory' + lf + str(bytes(Interpreter.memory)) + lf + lf)
-                debug_file.write('# memory pointer' + lf + str(Interpreter.memory_ptr) + lf + lf)
-                debug_file.write('# output' + lf + str(bytes(Interpreter.output)) + lf + lf)
-                Interpreter.debug_file_num = Interpreter.debug_file_num + 1 if Interpreter.debug_file_num < 99 else 1
-                if Interpreter.rgb_input is not None:
-                    debug_file.write('# RGB input' + lf + Interpreter.rgb_input + lf + lf)
-                pass'''
 
 
 # Sets input to interpreter and returns dictionaties of cykles (start->end and end->start)
