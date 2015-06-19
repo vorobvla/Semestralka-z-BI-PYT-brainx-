@@ -80,16 +80,16 @@ def turn_around_and_write(move_method, turn_method, write_method, write_what):
         move_method()
 
 def f_to_lc(bf_sourcecode, img=None):
-    def deal_with_boarder(right_wite_what, left_write_what):
+    def deal_with_boarder(right_write_what, left_write_what):
         # analyze postition & set bl instr if needed
         if img.get_move_direction() == 'e' and img.pos_x == img.width - 1:
             # turn adound and write 'rotate IP to the right' on proper places
-            turn_around_and_write(img.move_pos, img.turn_r, write_instr, right_wite_what)
-            turn_around_and_write(img.move_pos, img.turn_r, write_instr, left_write_what)
+            turn_around_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
+            turn_around_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
         elif img.get_move_direction() == 'w' and img.pos_x == 0:
             # turn adound and write 'rotate IP to the right left' on proper places
-            turn_around_and_write(img.move_pos, img.turn_l, write_instr, 'LT')
-            turn_around_and_write(img.move_pos, img.turn_l, write_instr, 'LT')
+            turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
+            turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
 
     if img is None:
         # loller
@@ -108,16 +108,21 @@ def f_to_lc(bf_sourcecode, img=None):
         def write_instr(instr_key):
             raw_px = img.read_from_pos()
             # difference between actual coding value and the value we whant
-            delta = instrs[instr_key] - (-2*raw_px[0] + 3*raw_px[1] + raw_px[2]) % 11
+            delta = (instrs[instr_key] + 2*raw_px[0] - 3*raw_px[1] -  raw_px[2]) % 11
             # compute improved blue value (changing blue color beacoue it's not multiplyed by anythibg un formula)
-            b = (raw_px[2] + delta) % 256
+            # and prevent overflow
+            if delta < 0 and raw_px[2] < 10:
+                b = raw_px[2] + 11 + delta
+            elif delta > 0 and raw_px[2] > 245:
+                b = raw_px[2] - 11 + delta
+            else:
+                b = (raw_px[2] + delta) % 256
             # write new pixel with improved value
             img.write_to_pos((raw_px[0], raw_px[1], b))
 
         # check if code will fit into image
             if bf_no_extentions_len(bf_sourcecode) > ((img.width - 2) * img.heigth) + 1:
                 raise TranslationError('Program is not foing to fit in the image')
-
     for token in bf_sourcecode:
         # turn and leave proper instruction if needed
         deal_with_boarder('RT', 'LT')
