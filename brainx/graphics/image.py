@@ -5,17 +5,27 @@ from zlib import compress
 itob = lambda i, offset: i.to_bytes(offset, byteorder='big')
 
 
+class OutOfBoardersException(Exception):
+    pass
+
+
+# it's possible to move in it
 class Image:
     width = 0
     heigth = 0
     content = []
+    pos_x = 0
+    pos_y = 0
+    delta_xy = (1, 0)
+    turn_r_d = {(1, 0): (0, 1), (0, 1): (-1, 0), (-1, 0): (0, -1), (0, -1): (1, 0)}
+    turn_l_d = {(1, 0): (0, -1), (0, -1): (-1, 0), (-1, 0): (0, 1), (0, 1): (1, 0)}
 
-    # data is array of byte strings representing data from png
-    def __init__(self, data, width, heigth, ):
+    # content is 2d array of byte strings representing data from png
+    def __init__(self, content, width, heigth):
         self.width = width
         self.heigth = heigth
         # bulid 2d array of content
-        for row in data:
+        for row in content:
             img_row = []
             for i in range(0, width * 3, 3):
                 pixel = (row[i], row[i + 1], row[i + 2])
@@ -30,8 +40,28 @@ class Image:
             output += '    {},\n'.format(row)
         return '[\n{}]'.format(output)
 
+    def read_from_pos(self):
+        return self.content[self.pos_y][self.pos_x]
+
+    # input must be tuple of len = 3
+    def write_to_pos(self, in_px):
+        self.content[self.pos_y][self.pos_x] = in_px
+
     def get_px(self, y, x):
         return self.content[y][x]
+
+    # new_delta = ip_turn_x[old_delta]
+    def turn_r(self):
+        self.delta_xy = self.turn_r_d[self.delta_xy]
+
+    def turn_l(self):
+        self.delta_xy = self.turn_l_d[self.delta_xy]
+
+    def move_pos(self):
+        self.pos_x += self.delta_xy[0]
+        self.pos_y += self.delta_xy[1]
+        if (not 0 <= self.pos_x < self.width) or (not 0 <= self.pos_y < self.heigth):
+            raise OutOfBoardersException
 
     def to_png(self, filename):
 
