@@ -13,6 +13,7 @@ from graphics import png_processor
 from graphics import image
 from traceback import print_exc
 from sys import stderr
+
 #from  import logger
 
 
@@ -23,6 +24,7 @@ context.Settings.parse_opts(argv)
 try:
     # run as translater
     if context.Settings.translate_mode:
+        enclose_with_b = lambda str: str if str.endswith('.b') else str + '.b'
         # --f2lc
         # will contain strings representing input and output images
         rgb_in = None
@@ -30,6 +32,7 @@ try:
         # will contain code
         if context.Settings.opt_f2lc:
             # retrieve bf source
+            context.Settings.arg_input_bf_file = enclose_with_b(context.Settings.arg_input_bf_file)
             with open(context.Settings.arg_input_bf_file, encoding='ASCII', mode='r') as file:
                     bf_code = file.read()
             input_img = None
@@ -51,8 +54,7 @@ try:
             if context.Settings.arg_output_bf_file is None:
                 print(bf_code)
             else:
-                if not context.Settings.arg_output_bf_file.endswith('.b'):
-                    context.Settings.arg_output_bf_file += '.b'
+                context.Settings.arg_output_bf_file = enclose_with_b(context.Settings.arg_output_bf_file)
                 with open(context.Settings.arg_output_bf_file, encoding='ASCII', mode='w') as file:
                     file.write(bf_code)
             rgb_in = input_img.to_text()
@@ -67,11 +69,11 @@ try:
     else:
         #defined here to call interpret_bf in one place
         rgb_in = None
-        # retrieve source code
-        # from user input
+        # retrieve source code (retrieves it from just one place)
+        # from user input (or stdinput)
         if context.Settings.interactive_mode:
-            #read input
-            sourcecode = input('Please, insert brainfuck code: ')
+            #read input with prompt
+            sourcecode = input('Please, insert brainfuck code:\n')
         # from console
         elif context.Settings.arg_console_sourcecode is not None:
             sourcecode = context.Settings.arg_console_sourcecode
