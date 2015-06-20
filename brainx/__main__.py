@@ -67,7 +67,7 @@ try:
 
     # run as interpreter
     else:
-        #defined here to call interpret_bf in one place
+        # defined here to call interpret_bf in one place
         rgb_in = None
         # retrieve source code (retrieves it from just one place)
         # from user input (or stdinput)

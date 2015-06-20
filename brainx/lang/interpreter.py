@@ -5,6 +5,8 @@ from maintainance import logger
 class InvalidCodeException(Exception):
     pass
 
+class InterpreterSettingsException(Exception):
+    pass
 
 class Interpreter:
     memory = bytearray(1)
@@ -107,6 +109,9 @@ def analyze_code(sourcecode_in):
     return d_start_to_end, d_end_to_start
 
 def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None):
+    # control serrings
+    if in_memory_ptr >= len(in_memory):
+        raise InterpreterSettingsException('Attempt to set memory pointer out of memory.')
     # reset interpreter
     Interpreter.memory = bytearray(in_memory)
     Interpreter.memory_ptr = in_memory_ptr
