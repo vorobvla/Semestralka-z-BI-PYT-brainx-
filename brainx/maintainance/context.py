@@ -20,6 +20,9 @@ RETURN_ERROR = 1
 LANG_BRAINLOLLER = 0
 LANG_BRAINCOPTER = 1
 
+PNM_IN_NAME = 'input_image_in_pnm'
+PNM_OUT_NAME = 'output_image_in_pnm'
+
 is_opt = lambda str_opt: str_opt.startswith('-')
 
 DUPLICATE_OPT = lambda opt: 'Duplicate setting of option {} occured.'.format(opt)
@@ -134,7 +137,7 @@ class Settings:
                                 Settings.arg_output_bl_bc_file = opts[idx]
                                 o_is_set = True
                                 # skip arg3
-                                idx += 3
+                                idx += 1
                             else:
                                 # implemented this way to be able to add non-oblogatory opts
                                 if i_is_set and o_is_set:

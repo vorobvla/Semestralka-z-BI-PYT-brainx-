@@ -92,9 +92,7 @@ class Image:
         return self.delta_name[self.delta_xy]
 
     def to_png(self, filename):
-
         with open(filename, mode='wb') as file:
-
             def write_chunk(name, data):
                 # length of data, hdr, data, crc(name + data)
                 file.write(itob(len(data), 4) + name + data + itob(crc32(name + data), 4))
@@ -114,3 +112,12 @@ class Image:
             # write IEND
             write_chunk(b'IEND', b'')
 
+    def to_pnm(self, filename):
+        # prepare binary data (contetn of image)
+        bin_content = b''
+        for row in self.content:
+            for px in row:
+                bin_content += itob(px[0], 1) + itob(px[1], 1) + itob(px[2], 1)
+        # write header and data to file
+        with open(filename, mode='wb') as file:
+            file.write(eval('b\'P6 {} {} 255 \' + {}'.format(self.width, self.heigth, bin_content)))

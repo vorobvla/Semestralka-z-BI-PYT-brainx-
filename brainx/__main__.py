@@ -35,15 +35,19 @@ try:
             input_img = None
             if context.Settings.arg_input_png_file is not None:
                 input_img = png_processor.process_png(context.Settings.arg_input_png_file)
+                if context.Settings.opt_pnm_pbm:
+                    input_img.to_pnm(context.PNM_IN_NAME)
                 rgb_in = input_img.to_text()
-            img = translater.f_to_lc(bf_code, input_img)
-            img.to_png(context.Settings.arg_output_bl_bc_file)
-            rgb_out = img.to_text()
+            output_img = translater.f_to_lc(bf_code, input_img)
+            output_img.to_png(context.Settings.arg_output_bl_bc_file)
+            rgb_out = output_img.to_text()
+            if context.Settings.opt_pnm_pbm:
+                output_img.to_pnm(context.PNM_OUT_NAME)
 
         # --lc2f
         elif context.Settings.opt_lc2f:
-            img = png_processor.process_png(context.Settings.arg_input_bl_bc_file)
-            bf_code = translater.lc_to_f(img)
+            input_img = png_processor.process_png(context.Settings.arg_input_bl_bc_file)
+            bf_code = translater.lc_to_f(input_img)
             if context.Settings.arg_output_bf_file is None:
                 print(bf_code)
             else:
@@ -51,7 +55,9 @@ try:
                     context.Settings.arg_output_bf_file += '.b'
                 with open(context.Settings.arg_output_bf_file, encoding='ASCII', mode='w') as file:
                     file.write(bf_code)
-            rgb_in = img.to_text()
+            rgb_in = input_img.to_text()
+            if context.Settings.opt_pnm_pbm:
+                input_img.to_pnm(context.PNM_IN_NAME)
         # print debug file
         #print('asd: {}'.format(context.Settings.opt_test))
         if context.Settings.opt_test:
@@ -80,6 +86,8 @@ try:
                 img = png_processor.process_png(context.Settings.arg_source_file)
                 sourcecode = translater.lc_to_f(img)
                 rgb_in = img.to_text()
+                if context.Settings.opt_pnm_pbm:
+                    img.to_pnm(context.PNM_IN_NAME)
             pass
 
         # run sourcecode
