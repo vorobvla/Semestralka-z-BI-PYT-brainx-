@@ -24,15 +24,21 @@ try:
     # run as translater
     if context.Settings.translate_mode:
         # --f2lc
+        # will contain strings representing input and output images
+        rgb_in = None
+        rgb_out = None
+        # will contain code
         if context.Settings.opt_f2lc:
             # retrieve bf source
             with open(context.Settings.arg_input_bf_file, encoding='ASCII', mode='r') as file:
-                    bfcode = file.read()
+                    bf_code = file.read()
             input_img = None
             if context.Settings.arg_input_png_file is not None:
                 input_img = png_processor.process_png(context.Settings.arg_input_png_file)
-            img = translater.f_to_lc(bfcode, input_img)
+                rgb_in = input_img.to_text()
+            img = translater.f_to_lc(bf_code, input_img)
             img.to_png(context.Settings.arg_output_bl_bc_file)
+            rgb_out = img.to_text()
 
         # --lc2f
         elif context.Settings.opt_lc2f:
@@ -45,9 +51,11 @@ try:
                     context.Settings.arg_output_bf_file += '.b'
                 with open(context.Settings.arg_output_bf_file, encoding='ASCII', mode='w') as file:
                     file.write(bf_code)
-            # print debug file
-            if context.Settings.opt_test:
-                logger.Logger.log_to_file(program_data=bf_code, rgb_output=img.to_text())
+            rgb_in = img.to_text()
+        # print debug file
+        #print('asd: {}'.format(context.Settings.opt_test))
+        if context.Settings.opt_test:
+            logger.Logger.log_to_file(program_data=bf_code, rgb_input=rgb_in, rgb_output=rgb_out)
 
     # run as interpreter
     else:

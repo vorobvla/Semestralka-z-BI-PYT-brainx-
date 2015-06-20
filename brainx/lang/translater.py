@@ -91,6 +91,8 @@ def f_to_lc(bf_sourcecode, img=None):
             turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
             turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
 
+    # there will be sting containing data fron  input img
+    rgb_input = None
     if img is None:
         # loller
         instrs = { '>' : (255, 0, 0), '<' : (128, 0, 0), '+' : (0, 255, 0), '-' : (0, 128, 0), '.' : (0, 0, 255),
@@ -103,6 +105,9 @@ def f_to_lc(bf_sourcecode, img=None):
         img = image.Image(round(sqrt(len(bf_sourcecode))), 1)
     else:
         # copter
+        # safe origin image as string for debug logs
+        rgb_input = img.to_text()
+
         instrs = { '>' : 0, '<' : 1, '+' : 2, '-' : 3, '.' : 4, ',' : 5,
                    '[' : 6, ']' : 7, 'RT' : 8, 'LT' : 9, 'NOP': 10 }
         def write_instr(instr_key):
@@ -120,9 +125,6 @@ def f_to_lc(bf_sourcecode, img=None):
             # write new pixel with improved value
             img.write_to_pos((raw_px[0], raw_px[1], b))
 
-        # check if code will fit into image
-            if bf_no_extentions_len(bf_sourcecode) > ((img.width - 2) * img.heigth) + 1:
-                raise TranslationError('Program is not foing to fit in the image')
     # let the img to extend if program is longer then it
     img.autoextend = True
     for token in bf_sourcecode:
@@ -131,8 +133,7 @@ def f_to_lc(bf_sourcecode, img=None):
 
         # process tokens from source
         if token == '#':
-            # TODO bc input
-            logger.Logger.log_to_file(program_data=bf_sourcecode, rgb_output=img.to_text())
+            logger.Logger.log_to_file(program_data=bf_sourcecode, rgb_input=rgb_input, rgb_output=img.to_text())
         elif token == '!':
             # cant code input
             break
@@ -144,7 +145,6 @@ def f_to_lc(bf_sourcecode, img=None):
             except KeyError:
                 pass
     img.autoextend = False
-    '''
     # fill rest of image with NOP
     while True:
         try:
@@ -153,7 +153,7 @@ def f_to_lc(bf_sourcecode, img=None):
             write_instr('NOP')
             img.move_pos()
         except image.OutOfBoardersException:
-            break'''
+            break
 
     #print(img.to_text())
     return img
