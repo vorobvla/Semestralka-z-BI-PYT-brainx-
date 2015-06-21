@@ -16,13 +16,6 @@ def is_b_loller(img_matrix):
                 return False
     return True
 
-# computes number of code without ! # and any tokens that are not bf instructions
-def bf_no_extentions_len(code):
-    cnt = 0
-    for t in code:
-        if t == '+' or t == '-' or t == '<' or t == '>' or t == '.' or t == ',' or t == '[' or t == ']':
-            cnt += 1
-    return cnt
 
 # lranslate braincopter of brainloller image to brainfuck source
 def lc_to_f(source_img):
@@ -74,7 +67,7 @@ def lc_to_f(source_img):
 
     return bf_sourcecode
 
-def turn_around_and_write(move_method, turn_method, write_method, write_what):
+def turn_and_write(move_method, turn_method, write_method, write_what):
         write_method(write_what)
         turn_method()
         move_method()
@@ -84,12 +77,12 @@ def f_to_lc(bf_sourcecode, img=None):
         # analyze postition & set bl instr if needed
         if img.get_move_direction() == 'e' and img.pos_x == img.width - 1:
             # turn adound and write 'rotate IP to the right' on proper places
-            turn_around_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
-            turn_around_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
+            turn_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
+            turn_and_write(img.move_pos, img.turn_r, write_instr, right_write_what)
         elif img.get_move_direction() == 'w' and img.pos_x == 0:
             # turn adound and write 'rotate IP to the right left' on proper places
-            turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
-            turn_around_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
+            turn_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
+            turn_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
 
     # there will be sting containing data fron  input img
     rgb_input = None
@@ -157,5 +150,67 @@ def f_to_lc(bf_sourcecode, img=None):
 
     #print(img.to_text())
     return img
+
+# computes number of code without ! # and any tokens that are not bf instructions
+bf_no_extentions_len = lambda code: len([t for t in code if t == '+' or t == '-' or t == '<' or t == '>' or t == '.' or
+                                     t == ',' or t == '[' or t == ']'])
+
+# write brainloller as apiral
+def f_to_l_spiral(bf_sourcecode):
+    # get number of writtable insructions
+    px_amount = bf_no_extentions_len(bf_sourcecode)
+    # compute side of image (going to be a sqare)
+    side = ceil(sqrt(px_amount))
+    # we will need more pixels. add len of 'exit walk' (half of side) and number of turn instructuons
+    # (about 2 * side , a little bit less actually but it doesnt matter)
+    px_amount += ceil(side / 2) + 2 * side
+    # recalculate side
+    side  = ceil(sqrt(px_amount))
+    # whant even side
+    side = side if side % 2 == 0 else side + 1
+    # compute center of image (we will put exit here)
+    side_half = side / 2
+
+    instrs = { '>' : (255, 0, 0), '<' : (128, 0, 0), '+' : (0, 255, 0), '-' : (0, 128, 0), '.' : (0, 0, 255),
+               ',' : (0, 0, 128), '[' : (255, 255, 0), ']' : (128, 128, 0),
+               'RT' : (0, 255, 255) }
+
+    # compute and save distances after which we will turn
+    turns = [x for x in range(3, side + 1)] * 2
+    turns.sort()
+    turns.insert(0, 2)
+    walk_till = side
+    walked = 1
+
+    # create image
+    img = image.Image(side, side)
+
+    source_ptr = 0
+    # write
+    while True:
+        # turn has the higthest priority
+        if walked == walk_till:
+            turn_and_write(img.move_pos, img.turn_r, img.write_to_pos, instrs['RT'])
+            walked = 2
+            walk_till = turns.pop()
+            if len(turns) == 0:
+                img.write_to_pos(instrs['RT'])
+                break
+        #exit path?
+        if (img.pos_y == side_half) and (img.pos_x < side_half):
+            # nop, making an "exit path"
+            pass
+        elif source_ptr < len(bf_sourcecode):
+            # write instr
+            try:
+                img.write_to_pos(instrs[bf_sourcecode[source_ptr]])
+            except KeyError:
+                pass
+            source_ptr += 1
+        #move on
+        img.move_pos()
+        walked += 1
+    return img
+
 
 

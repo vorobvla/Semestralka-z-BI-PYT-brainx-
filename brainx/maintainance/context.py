@@ -116,6 +116,7 @@ class Settings:
     arg_input_bl_bc_file = None
     arg_output_bf_file = None
     arg_console_sourcecode = None
+    opt_bl_spiral = False
 
 
     # parses opts. returns a list of unparced arguments
@@ -197,6 +198,9 @@ class Settings:
                                 Settings.arg_output_bl_bc_file = opts[idx]
                                 o_is_set = True
                                 # skip arg3
+                                idx += 1
+                            elif opts[idx] == '--bl_spiral':
+                                Settings.opt_bl_spiral = True
                                 idx += 1
                             else:
                                 # implemented this way to be able to add non-oblogatory opts

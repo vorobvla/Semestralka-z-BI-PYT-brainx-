@@ -41,7 +41,10 @@ try:
                 if context.Settings.opt_pnm_pbm:
                     input_img.to_pnm(context.PNM_IN_NAME)
                 rgb_in = input_img.to_text()
-            output_img = translater.f_to_lc(bf_code, input_img)
+            if context.Settings.opt_bl_spiral:
+                output_img = translater.f_to_l_spiral(bf_code)
+            else:
+                output_img = translater.f_to_lc(bf_code, input_img)
             output_img.to_png(context.Settings.arg_output_bl_bc_file)
             rgb_out = output_img.to_text()
             if context.Settings.opt_pnm_pbm:

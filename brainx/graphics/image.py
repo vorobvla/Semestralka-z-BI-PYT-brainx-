@@ -38,6 +38,8 @@ class Image:
         self.heigth = heigth
         # bulid 2d array of content
         if content is None:
+            # whant new image
+            self.content = []
             # heigth must be 0 because we whant to extend till appropriate size
             self.heigth = 0
             # empty if no content given
