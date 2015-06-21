@@ -14,6 +14,10 @@ translate program from one language to another. These modes have different inter
 
 Program runs in Translator mode if --lc2f or --f2lc occurs in the parameters. Otherwise it runs in Interpreter mode.
 
+Brainfuck program generator is an experimental feature that should have becane a new mode. It is not fully implemented
+though and program does if it is launched separately from other modes. So, please don't use parameters from any modes
+when using this feature. Most probably they will be ignored but they may cottupt the perfomance of program.
+
 Parameters valid in both modes:
     -h,    --help  display this help and exit
     --pnm, --pbm   write input and output image files also to PNM file in P6 format
@@ -51,6 +55,11 @@ form input_bl_bc_file file to brainfuck code. The result will be written to text
 output_bf_file. It in not needed to specify if the image is contains brainloller or braincopter program. The translator
 will do it itself.
 
+Parameters for generating code (this experemental feature should be a new mode, but it is not fully implemented yet):
+    --gen-bf, --gen-bl [text] generate brainfuck program that's output will be value of argument text. If this argument
+is missing, the user will have to insert the desired text in intractive mode (lake just like when calling with --prin
+ withoutor without arguments)
+
 Files' names and formats:
     Text files with brainfuck code must be text files with ASCII encoding. Their names must end with ".b" extension.
 If the name of this file is given as a value of input_bf_file or output_bf_file without ".b" extension, the program will
@@ -78,7 +87,9 @@ USAGE = \
     Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
 [-p|memory_pointer_position n] [--pnm|--pbm] ['--prin'|'--program-input' [program_input_file]] [-h|--help]
     Translator mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] |
---f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
+--f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )
+    Generate program:    brainx --gen-bf | --gen-bl [text]
+'''
 
 UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.format(unknwn_opt) + USAGE
 
