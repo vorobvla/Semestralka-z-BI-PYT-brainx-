@@ -121,7 +121,7 @@ try:
 
         # run sourcecode
         output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
-                                      context.Settings.opt_test, rgb_in, program_input)
+                                      context.Settings.opt_test, rgb_in, program_input, context.Settings.opt_o128)
         # print output
         print(output.decode('ASCII'), end='')
     exit(context.RETURN_OK)

@@ -37,12 +37,14 @@ read from it. Otherwise interpreter will get it from user in interactive mode (t
 when the program is started; if inrepreter is already running in interactive mode, the user will be asked to insert
 input after he or she inserts code). If program gets input via this option, the input deined in program code (with !)
 is ignored.
+    --o128                              if set, operaion mod 128 will be applied to every value that is written to
+output of brainfuck program. It can be useful if you whant to avoid errors caused by the problems with encoding.
 
 Program launched without arguments acts as an interpreter in interactive mode. The user is asked to insert brainfuck
 code. The retrieved code will be interpreted.
 
 Parameters valid in Translator mode:
-    --f2lc [--bl_spiral] -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
+    --f2lc [--bl-spiral] -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
 braincopter. -i specifies arguments input_bf_file and input_png_file. The first one that is the name of text file
 containing the brainfuck code to be translated. The second one is the name of the image file that will be used for
 translation to braincopter. If this argument is missing, the program will be translate to brainloller. If --bl_spiral
@@ -85,9 +87,9 @@ Exit codes:
 USAGE = \
 '''Usage:
     Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
-[-p|memory_pointer_position n] [--pnm|--pbm] ['--prin'|'--program-input' [program_input_file]] [-h|--help]
+[-p|memory_pointer_position n] [--pnm|--pbm] ['--prin'|'--program-input' [program_input_file]] [-h|--help] [--o128]
     Translator mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] |
---f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )
+--f2lc [--bl-spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )
     Generate program:    brainx --gen-bf | --gen-bl [text]
 '''
 
@@ -141,6 +143,7 @@ class Settings:
     arg_program_input = None
     arg_bf_gen = None
     gen_bl = False
+    opt_o128 = False
 
 
     # parses opts. returns a list of unparced arguments
@@ -223,7 +226,7 @@ class Settings:
                                 o_is_set = True
                                 # skip arg3
                                 idx += 1
-                            elif opts[idx] == '--bl_spiral':
+                            elif opts[idx] == '--bl-spiral':
                                 Settings.opt_bl_spiral = True
                                 idx += 1
                             else:
@@ -321,6 +324,9 @@ class Settings:
                     except IndexError:
                         pass
                     continue
+
+                elif opts[idx] == '--o128':
+                    Settings.opt_o128 = True
 
                 else:
                     raise OptsException('Unknown opt {} occured'.format(opts[idx]))

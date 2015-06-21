@@ -17,6 +17,7 @@ class Interpreter:
     output = bytearray()
     debug_file_num = 1
     rgb_input = None
+    o128 = False
 
     # get the memory cell on the position of the 'head' (aka memory pointer)
     read_cell = lambda: Interpreter.memory[Interpreter.memory_ptr]
@@ -55,7 +56,9 @@ class Interpreter:
     # print conent of actual mem cell to ascii char
     @staticmethod
     def print_cell():
-        Interpreter.output.append(Interpreter.memory[Interpreter.memory_ptr])
+        write = Interpreter.memory[Interpreter.memory_ptr] if Interpreter.o128 == False else \
+                Interpreter.memory[Interpreter.memory_ptr] % 128
+        Interpreter.output.append(write)
 
     # read from input and write to actual cell
     @staticmethod
@@ -105,7 +108,9 @@ def analyze_code(sourcecode):
     d_end_to_start = eval('{{{}}}'.format(','.join(cykles_list_end_start)))
     return d_start_to_end, d_end_to_start
 
-def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None, program_input=None):
+def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None, program_input=None,
+                 o128 = False):
+    Interpreter.o128 = o128
     # control serrings
     if in_memory_ptr >= len(in_memory):
         raise InterpreterSettingsException('Attempt to set memory pointer out of memory.')
