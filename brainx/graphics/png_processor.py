@@ -47,12 +47,10 @@ def defilter(row, prev_row):
     filt_type = row[0]
     row = row[1:]
     output_row = bytearray()
-    #print('PREW ROW:::{}'.format(prev_row))
     # previous pixels (as defined in w3 specification)
     a = lambda idx: 0 if idx - 3 < 0 else output_row[idx - 3]
     b = lambda idx: 0 if prev_row is None else prev_row[idx]
     c = lambda idx: 0 if idx - 3 < 0 or prev_row is None else prev_row[idx - 3]
-    #print('Type: {}'.format(filt_type))
 
     if filt_type == 0:
         output_row = bytearray(row)
@@ -70,7 +68,6 @@ def defilter(row, prev_row):
             output_row.append((x + paeth(a(i), b(i), c(i))) % 256)
     else:
         raise FileErrorException('Illegal filtration type {} occured'.format(filt_type))
-    #print('{}:: {}'.format(filt_type, output_row))
     return output_row
 
 
@@ -86,11 +83,9 @@ def process_png(filename):
             compressed_img_data = bytes()
             while True:
                 read = file.read(4)
-                #print('READ: ' + str(read))
                 if read == b'':
                     raise FileErrorException('Unexpected end of file')
                 data_len = btoi(read)
-                #print('DATA LEN:' + str(data_len))
 
                 # read chunk (containing cunk name + other chunk data)
                 data = file.read(4 + data_len)
@@ -112,13 +107,11 @@ def process_png(filename):
                     # append data
                     compressed_img_data += data[4:]
                 elif chunk == b'IEND':
-                    #print('REACHED END')
                     break
                 elif obligatory_chunk(chunk):
                     raise NotImplementedError('Unexpected obligatory chunk {} in file {}'.format(str(chunk), filename))
                 else:
                     pass
-        #print(compressed_img_data)
         # decompress and defilter image data
         data = process_decompressed_png_data(decompress(compressed_img_data), img_width, img_heigth)
         return image.Image(img_width, img_heigth, content=data)

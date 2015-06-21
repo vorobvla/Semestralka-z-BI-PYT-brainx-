@@ -11,18 +11,15 @@ HELP = \
 brainfuck and brainloller/braincopter.
 Program can be ran as interpreter (Interpreter mode) to interpret a program or as translator (Translator mode) to
 translate program from one language to another. These modes have different interface.
-
 Program runs in Translator mode if --lc2f or --f2lc occurs in the parameters. Otherwise it runs in Interpreter mode.
-
-Brainfuck program generator is an experimental feature that should have becane a new mode. It is not fully implemented
+Brainfuck program generator is an experimental feature that should have became a new mode. It is not fully implemented
 though and program does if it is launched separately from other modes. So, please don't use parameters from any modes
-when using this feature. Most probably they will be ignored but they may cottupt the perfomance of program.
-
+when using this feature. Most probably they will be ignored but they may corrupt the performance of program.
 Parameters valid in both modes:
     -h,    --help  display this help and exit
     --pnm, --pbm   write input and output image files also to PNM file in P6 format
-    -t,    --test  write debug information into debug file after the program is interpreted / translated
-
+    -t,    --test  activates logging of debug information into debug files. Logging will ne commited when instuction #
+occurs in code and after the program is interpreted / translated
 Parameters valid in Interpreter mode:
    programfile                          name of file containing brainfuck, brainloller or braincopter program that is
 supposed to be ran. Must end with '.b' if it is a text file with brainfuck program. Otherwise program recognizes
@@ -35,14 +32,12 @@ greater or equal to 0 and less then length of memory (that is 1 by default)
     --prin, --program-input [program_input_file]    set program input. If program_input_file is defined, infut will be
 read from it. Otherwise interpreter will get it from user in interactive mode (the use will be asked to insert input
 when the program is started; if inrepreter is already running in interactive mode, the user will be asked to insert
-input after he or she inserts code). If program gets input via this option, the input deined in program code (with !)
+input after he or she inserts code). If program gets input via this option, the input defined in program code (with !)
 is ignored.
-    --o128                              if set, operaion mod 128 will be applied to every value that is written to
-output of brainfuck program. It can be useful if you whant to avoid errors caused by the problems with encoding.
-
+    --o128                              if set, operation mod 128 will be applied to every value that is written to
+output of brainfuck program. It can be useful if you want to avoid errors caused by the problems with encoding.
 Program launched without arguments acts as an interpreter in interactive mode. The user is asked to insert brainfuck
 code. The retrieved code will be interpreted.
-
 Parameters valid in Translator mode:
     --f2lc [--bl-spiral] -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
 braincopter. -i specifies arguments input_bf_file and input_png_file. The first one that is the name of text file
@@ -56,14 +51,12 @@ brainloller even if this argument presents.
 form input_bl_bc_file file to brainfuck code. The result will be written to text file with name specified in
 output_bf_file. It in not needed to specify if the image is contains brainloller or braincopter program. The translator
 will do it itself.
-
 Parameters for generating code (this experemental feature should be a new mode, but it is not fully implemented yet):
     --gen-bf, --gen-bl [text] generate brainfuck program that's output will be value of argument 'text'. If this argument
 is missing, the user will have to insert the desired text in intractive mode (lake just like when calling with --prin
  withoutor without arguments). --gen-bf prints generated program to ouptut, --gen-bl also prints generated program to
  ouptut and creates image file with brinloller code of the program. The name of the file is T.bl.png where T is the
  first 20 signs of output of the generated program.
-
 Files' names and formats:
     Text files with brainfuck code must be text files with ASCII encoding. Their names must end with ".b" extension.
 If the name of this file is given as a value of input_bf_file or output_bf_file without ".b" extension, the program will
@@ -78,14 +71,12 @@ IHDR, IDAT and IEND.
 method set to 0. They only contain IHDR, IDAT and IEND chunks. All data is saved into one IDAT chunk.
     Output PNM files are in format P6 and use whitespace as a separator for header fields. They are named
 "input_image_in_pnm" (containing input image of program) or "output_image_in_pnm" (containing output image of program)
-
 Exit codes:
     0 if Ok,
     1 any other problem,
     4 attempt to process an image file, that's format is not supported,
     8 attempt to process an image file, that contains obligatory chunks, that's processing is not implemented.
 '''
-
 USAGE = \
 '''Usage:
     Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
@@ -157,7 +148,6 @@ class Settings:
             flag_mem_set = False
             flag_mem_ptr_set = False
             while idx < len(opts):
-                # print('IDX {}'.format(idx))
                 if not is_opt(opts[idx]):
                     argv.append(opts[idx])
 
@@ -255,14 +245,11 @@ class Settings:
                     flag_mem_set = True
                     try:
                         if not is_opt(opts[idx + 1]):
-                            # print('\n\nProcessing -m.\nGot: ' + str(opts[idx + 1]))
                             memory_str = opts[idx + 1]
                             memory_str = memory_str[1:] if memory_str.startswith('b') else memory_str
                             if memory_str.startswith('\'') and memory_str.endswith('\''):
                                 memory_str = memory_str[1:-1]
                             exec('Settings.arg_memory = b\'{}\''.format(memory_str))
-                            # Settings.arg_memory = opts[idx + 1]
-                            # print('Saved: ' + str(Settings.arg_memory ))
                             idx += 2
                             continue
                     except IndexError:
@@ -340,14 +327,10 @@ class Settings:
                 if argv[1].startswith('"') and argv[1].endswith('"'):
                     Settings.arg_console_sourcecode = argv[1][1:-1]
                 elif not path.isfile(argv[1]):
-                    #try:
                     raise ArgsException('Can not recognize argument \'{}\'. If You whant to pass file to interpreter, '
                                         'check whether this file exists and accessible. If You want to pass brainfuck '
                                         'source code, try to escape quotes. If You whant to use translation mode, you'
                                         ' this argument is not supposed to be used.'.format(argv[1]))
-                    #except:
-                    #    print_exc(file=stderr)
-                    #    exit(4)
                 else:
                     Settings.arg_source_file = argv[1]
             else:

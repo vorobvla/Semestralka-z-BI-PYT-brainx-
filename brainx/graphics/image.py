@@ -50,8 +50,6 @@ class Image:
                 img_row = []
                 for i in range(0, width * 3, 3):
                     pixel = (row[i], row[i + 1], row[i + 2])
-                    # TODO: analyze lang
-                    #if pixel != (255, 0, 0) or pixel != (128, 0, 0) or pixel != (,,)
                     img_row.append(pixel)
                 self.content.append(img_row)
 
@@ -67,8 +65,6 @@ class Image:
     # input must be tuple of len = 3
     def write_to_pos(self, in_px):
         self.content[self.pos_y][self.pos_x] = in_px
-        #print('write to: x = {} / {}, y = {} / {} dir = {}'.format(self.pos_x, self.width, self.pos_y, self.heigth, self.delta_name[self.delta_xy]))
-
 
     # new_delta = ip_turn_x[old_delta]
     def turn_r(self):
@@ -83,7 +79,6 @@ class Image:
         # may autoextend down
         if not self.pos_y < self.heigth:
             if self.autoextend:
-                # print(self.content)
                 self.extend()
             else:
                 raise OutOfBoardersException('x = {}, y = {}'.format(self.pos_x, self.pos_y))
@@ -104,7 +99,7 @@ class Image:
             # write IDAT (just one chunk yet)
             data = bytearray()
             for row in self.content:
-            # filtering is 0 on every row
+                # filtering is 0 on every row
                 data.append(0)
                 for px in row:
                     data.append(px[0])

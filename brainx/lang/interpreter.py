@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from maintainance import logger
 
-
 class InvalidCodeException(Exception):
     pass
 
@@ -137,12 +136,15 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
     #coun len after all manipulations with sourcecode
     sourcecode_len = len(sourcecode)
 
+    # set logging if not set and ends with #
+    if sourcecode.endswith('#'):
+        logger.turn_logging(True)
+
     cykle_jump_from_start, cykle_jump_from_end = analyze_code(sourcecode)
 
     idx = 0
 
     while idx < sourcecode_len:
-        # print("Processing {} at {}".format(sourcecode[idx], idx))
         if sourcecode[idx].isspace():
             pass
         elif sourcecode[idx] == '+':

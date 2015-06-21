@@ -63,7 +63,6 @@ def lc_to_f(source_img):
             source_img.move_pos()
         except image.OutOfBoardersException:
             break
-#        print(inst_ptr_y, ' ', inst_ptr_x)
 
     return bf_sourcecode
 
@@ -84,6 +83,10 @@ def f_to_lc(bf_sourcecode, img=None):
             turn_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
             turn_and_write(img.move_pos, img.turn_l, write_instr, left_write_what)
 
+    bf_sourcecode = bf_sourcecode.split('!')[0]
+    if bf_sourcecode.endswith('#'):
+        logger.turn_logging(True)
+
     # there will be sting containing data fron  input img
     rgb_input = None
     if img is None:
@@ -93,8 +96,6 @@ def f_to_lc(bf_sourcecode, img=None):
                    'RT' : (0, 255, 255), 'LT' : (0, 128, 128), 'NOP' : (0, 0, 0) }
         def write_instr(instr_key):
             img.write_to_pos(instrs[instr_key])
-        # image is going to be square + 2 px for IP rotation
-        #side = ceil(sqrt(len(bf_sourcecode))) + 2
         img = image.Image(round(sqrt(len(bf_sourcecode))), 1)
     else:
         # copter
@@ -147,8 +148,6 @@ def f_to_lc(bf_sourcecode, img=None):
             img.move_pos()
         except image.OutOfBoardersException:
             break
-
-    #print(img.to_text())
     return img
 
 # computes number of code without ! # and any tokens that are not bf instructions
@@ -196,7 +195,7 @@ def f_to_l_spiral(bf_sourcecode):
             if len(turns) == 0:
                 img.write_to_pos(instrs['RT'])
                 break
-        #exit path?
+        # exit path?
         if (img.pos_y == side_half) and (img.pos_x < side_half):
             # nop, making an "exit path"
             pass
@@ -207,7 +206,7 @@ def f_to_l_spiral(bf_sourcecode):
             except KeyError:
                 pass
             source_ptr += 1
-        #move on
+        # move on
         img.move_pos()
         walked += 1
     return img
@@ -220,7 +219,6 @@ def ascii_to_bf(str):
     program = '>'
 
     for token in ords:
-        #program += '\n'
         # count difference berween new and old wasl of cell
         delta = token - last_ord
         if delta == 0:
@@ -235,7 +233,7 @@ def ascii_to_bf(str):
             program += '<{idx}[>{body}<-]>{out}.'.format(idx='+'*(delta//const), body=instr*const,
                                                            out=instr*(delta % const))
         else:
-            #short enouth. no need for cykle
+            # short enouth. no need for cykle
             program += instr * delta + '.'
         last_ord = token
     return program

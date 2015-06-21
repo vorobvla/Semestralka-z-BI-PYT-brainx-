@@ -63,8 +63,6 @@ try:
             rgb_in = input_img.to_text()
             if context.Settings.opt_pnm_pbm:
                 input_img.to_pnm(context.PNM_IN_NAME)
-        # print debug file
-        #print('asd: {}'.format(context.Settings.opt_test))
         if context.Settings.opt_test:
             logger.Logger.log_to_file(program_data=bf_code, rgb_input=rgb_in, rgb_output=rgb_out)
 

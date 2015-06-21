@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+from . import context
+
+
+def turn_logging(on):
+    context.Settings.opt_test = on
 
 
 class Logger():
@@ -7,6 +12,9 @@ class Logger():
     # all args must be strings (for conveniance)
     @staticmethod
     def log_to_file(program_data=None, memory=None, memory_pointer=None, output=None, rgb_input=None, rgb_output=None):
+        if not context.Settings.opt_test:
+            # no need to log
+            return
         # UNIX endline
         lf = chr(10)
         with open('debug_{:02}.log'.format(Logger.file_num), encoding='ASCII', mode='w') as debug_file:
