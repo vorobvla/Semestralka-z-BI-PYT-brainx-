@@ -6,10 +6,70 @@ from sys import stderr
 from traceback import print_exc
 #from traceback import print_exc
 
-HELP = 'HELP!!!!!'
-USAGE = '''Usage:
-    Interpreter mode:    brainx [sourcefile | "brainfuck_code"] [-t|--test] [-m memory] [-p memory_pointer_position] [--pnm|--pbm] [-h|--help]
-    Translater mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] | --f2lc -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
+HELP = \
+    '''This program can interpret brainfuck, brainloller or braincopter programs and translate program code between
+brainfuck and brainloller/braincopter.
+Program can be ran as interpreter (Interpreter mode) to interpret a program or as translator (Translator mode) to
+translate program from one language to another. These modes have different interface.
+
+Program runs in Translator mode if --lc2f or --f2lc occurs in the parameters. Otherwise it runs in Interpreter mode.
+
+Parameters valid in both modes:
+    -h,    --help  display this help and exit
+    --pnm, --pbm   write input and output image files also to PNM file in P6 format
+    -t,    --test  write debug information into debug file after the program is interpreted / translated
+
+Parameters valid in Interpreter mode:
+   programfile                          name of file containing brainfuck, brainloller or braincopter program that is
+supposed to be ran. Must end with '.b' if it is a text file with brainfuck program. Otherwise program recognizes
+the file as an image file (see below)
+   brainfuck_code                       brainfuck code that is supposed to be interpreted
+    -m,  --memory    b'memory_state'     set starting state of memory. memory_state argument must be a description of
+desired state in a format of python bytes (as noted in the start of this line)
+    -p,  --memory_pointer_position   n   set starting position of memory pointer. n is the desired position. Must be
+greater or equal to 0 and less then length of memory (that is 1 by default)
+Program launched without arguments acts as an interpreter in interactive mode. The user is asked to insert brainfuck
+code. The retrieved code will be interpreted.
+
+Parameters valid in Translator mode:
+    --f2lc  -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
+braincopter. -i specifies arguments input_bf_file and input_png_file. The first one that is the name of text file
+containing the brainfuck code to be translated. The second one is the name of the image file that will be used for
+translation to braincopter. If this argument is missing, the program will be translate to brainloller.
+-o output_bl_bc_file contains the name of image file where the result brainloller/braincopter image will be written to
+    --lc2f  input_bl_bc_file    [output_bf_file]                        translate image in brainloller/braincopter
+form input_bl_bc_file file to brainfuck code. The result will be written to text file with name specified in
+output_bf_file. It in not needed to specify if the image is contains brainloller or braincopter program. The translator
+will do it itself.
+
+Files' names and formats:
+    Text files with brainfuck code must be text files with ASCII encoding. Their names must end with ".b" extension.
+If the name of this file is given as a value of input_bf_file or output_bf_file without ".b" extension, the program will
+correct it automatically. It will not correct programfile though because in this case ".b" is used to distinguish
+the text file with brainfuck from image files.
+    Debug files are text files encoded with ASCII with name debug_NN.log where NN is number of file. These files
+content information about state of interpreter/translator during or after running/translating the code.
+    An input image file must be in PNG format with bit depth set to 8, color type set to 2 and compression method,
+filter method and interlace method set to 0. It also must not contain any obligatory chunks except
+IHDR, IDAT and IEND.
+    Output PNG files have bit depth set to 8, color type set to 2 and compression method, filter method and interlace
+method set to 0. They only contain IHDR, IDAT and IEND chunks. All data is saved into one IDAT chunk.
+    Output PNM files are in format P6 and use whitespace as a separator for header fields. They are named
+"input_image_in_pnm" (containing input image of program) or "output_image_in_pnm" (containing output image of program)
+
+Exit codes:
+    0 if Ok,
+    1 any other problem,
+    4 attempt to process an image file, that's format is not supported
+    8 attempt to process an image file, that contains obligatory chunks, that's processing is not implemented
+'''
+
+USAGE = \
+'''Usage:
+    Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
+[-p|memory_pointer_position n] [--pnm|--pbm] [-h|--help]
+    Translator mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] |
+--f2lc -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
 
 UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.format(unknwn_opt) + USAGE
 
@@ -204,6 +264,7 @@ class Settings:
                     Settings.opt_pnm_pbm = True
 
                 elif opts[idx] == '-h' or opts[idx] == '--help':
+                    print(USAGE)
                     print(HELP)
                     exit(0)
                 else:
