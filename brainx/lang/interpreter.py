@@ -75,11 +75,8 @@ class Interpreter:
 
 
 # Sets input to interpreter and returns dictionaties of cykles (start->end and end->start)
-def analyze_code(sourcecode_in):
-    try:
-        sourcecode, Interpreter.input = sourcecode_in.split('!', 1)
-    except ValueError:
-        sourcecode = sourcecode_in
+# surcecode must not contain input. only program data
+def analyze_code(sourcecode):
     stack = []
     cykles_list_start_end = []
     cykles_list_end_start = []
@@ -108,7 +105,7 @@ def analyze_code(sourcecode_in):
     d_end_to_start = eval('{{{}}}'.format(','.join(cykles_list_end_start)))
     return d_start_to_end, d_end_to_start
 
-def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None):
+def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=False, rgb_input = None, program_input=None):
     # control serrings
     if in_memory_ptr >= len(in_memory):
         raise InterpreterSettingsException('Attempt to set memory pointer out of memory.')
@@ -124,9 +121,17 @@ def interpret_bf(sourcecode_in, in_memory=b'\x00', in_memory_ptr=0, test_opt=Fal
     Interpreter.debug_file_num = 1
     # remove blanks (beacuse of tests, actually interpreter tolerates them)
     sourcecode = ''.join(sourcecode_in.split())
-    sourcecode_len = len(sourcecode)
 
     # setup input and get dictionaties for cykles
+    try:
+        sourcecode, Interpreter.input = sourcecode.split('!', 1)
+    except ValueError:
+        Interpreter.input = ''
+    Interpreter.input = Interpreter.input if program_input is None else program_input
+
+    #coun len after all manipulations with sourcecode
+    sourcecode_len = len(sourcecode)
+
     cykle_jump_from_start, cykle_jump_from_end = analyze_code(sourcecode)
 
     idx = 0

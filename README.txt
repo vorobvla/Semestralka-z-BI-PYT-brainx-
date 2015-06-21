@@ -16,19 +16,22 @@ Funkcionalita odpovídající požadavkům:
 Funkcionalita navíc:
 *	Zápis brainlolleru ve formě spirály. 
 		Překladač standartně zápisuje brainloller (a braincopter) v pořadí stejném jako na příkladu z přednášek. Dá se to uspořádaní změnít do úspořádaání do spirály, které zkusím popsat následujícím schématem:
-	------------------V
-	>---------------V |
-	| >-----------V | |
-	| | >-------V | | |
-	| | | >---V | | | |
-	XXXXXXXXXX< | | | |
-	| | | ^-----< | | |
-	| | ^---------< | |
-	| ^-------------< |
-	^-----------------<
+	-----------------V
+	>--------------V |
+	| >----------V | |
+	| | >------V | | |
+	| | | >--V | | | |
+	X X X XXX< | | | |
+	| | | ^----< | | |
+	| | ^--------< | |
+	| ^------------< |
+	^----------------<
 
 Kdě symboly V < ^ > oznáčují rotace IP doprava, X je NOP,  - | jsou ostatní instrukce.
 Tuto funkčnost se dá výužít požítím přepínače --bl_spiral u přeinacu --f2lc ( příklad syntaxe: --f2lc --bl_spiral -i input_bf_file [input_png_file] -o output_bl_bc_file ). Je-li daný přepínač nastaven, výstupem programu bude vždy obrázek v brainlolleru (a v spirálové podobě). Výskytuje-li se zároveň argument input_png_file, program ho ignoruje.
+*	Vstup se souboru nebo od užívatele v interaktívním režímu.
+		V režímu interpretru se dá zadát vstup prográmu pomocí přepínače '--prin'|'--program-input' [program_input_file]. Vstup bude načítan ze souboru, jehož název je v argumentu program_input_file. Nebude-li daný argument uveden, užívateloví bude nabídnuto uvést vstup v interaktivním režímu (podobně tomu, ják se uvádí kód 
+ve variantě bez argumentů). Je-li interpretr už běží v intaratívním řežímu, úžívatel zjíská možnost úvest vstup poté když uvedé kód prográmu. Je-li vstup prográmu je nástaven pomocí tohoto přepínače, vstup, který je úveden ve pográmovém kódu (pomocí !) je ignorován.
 
 --------------------------------------------------------
 
@@ -38,11 +41,12 @@ Detailnější popis programu:
 		Program se dá spouštět ve dvou režimech: jako interpretr („Interpreter mode“) a jako překladač (v helpu je uveden jako „Translator mode“). Parametry příkazové řádky pro teto dvě varianty se odlišují.  Ovšem v obou režimech jsou vlídní přepínače „-t“ i „--test“  (výpis ladící informace ve formátu, určeném v zadání; v režimu překladače v  výpisu budou mizet informace o paměti (#memory  a #memory pointer), protože program se v daném režimu nespustí a tedy stav paměti není zajímavý pro uživatele), „-h“ i „--help“ (výpis pomocné informace) a „--pnm“ i „--pbm“ (zápis vstupních/výstupních obrázků do PNM souborů ve formátu uvedeném v zadaní a s názvy „input_image_in_pnm“ resp „output_image_in_pnm“). Vyskytují-li se v parametrech nespecifikované argumenty a přepínače, opakující se  přepínače nebo parametry, které jsou příslušné různým režimům, (většinou) se vyskytne výjimka nebo parametr bude (měl by byt) ignorován. 
 
   		Režim interpretru:
-			Využíti:  brainx [__zdrojový_soubor__ | "__kód_v_brainfucku__"] [-t|--test] [-m|memory b'__počáteční_stav_paměti__'] [-p|--memory_pointer_position __pozice_paměťového_ukazatele__] [--pnm|--pbm] [-h|--help]
+			Využíti:  brainx [__zdrojový_soubor__ | "__kód_v_brainfucku__"] [-t|--test] [-m|memory b'__počáteční_stav_paměti__'] [-p|--memory_pointer_position __pozice_paměťového_ukazatele__] [--pnm|--pbm] ['--prin'|'--program-input' [__vstup_programu__]] [-h|--help]
 			Varianta bez argumentů načítá program ze standardního vstupu (v interaktivním režimu). Ovšem přepínače v daném případě budou platit (není to úplně podlě zadání ale to připadá autorovi praktičtější, lze tedy opravit nastavení i pro program uvedený  v interaktivním režímu) 
 			První argument  je název zdrojového souboru. Pokud název končí příponou „.b“ je vnímán jako textový soubor s programem v brainfucku tedy program se pokusí tento kód spustit. O opačném případě soubor je vnímán jako (možný) PNG obrázek a program se pokusí spustit kód, který získá překladem daného obrázku do brainfucku. Mimořádným případem je argument v uvozovkách, který bude vnímán jako spustitelný program v brainfucku (podle zadání)
-			Argument přepínače -m je binární řetězec popisující počateční stav paměti programu.
-			Argument přepínače -p je počáteční pozice paměťového ukazatele. Je-li nastaven na pozice mimo paměti (tedy větší než délka paměti zmenšená o 1) program vyhodí výjimku. 
+			Argument přepínače -m (--memory) je binární řetězec popisující počateční stav paměti programu.
+			Argument přepínače -p (--memory-pointer) je počáteční pozice paměťového ukazatele. Je-li nastaven na pozice mimo paměti (tedy větší než délka paměti zmenšená o 1) program vyhodí výjimku. 
+			Argument --prin | --program-input [program_input_file] nástavuje progámový vstup ze souboru nebo od užívatele. Podrobnějí v. Funkcionalita navíc.
 
 		Režim překladače:
 			Využíti: brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f __vstupní_bl_nebo_bc_soubor__ [__výstupní_bf_soubor__] | --f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )

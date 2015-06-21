@@ -95,9 +95,17 @@ try:
                     img.to_pnm(context.PNM_IN_NAME)
             pass
 
+        # got input?
+        program_input = None
+        if context.Settings.arg_program_input is True:
+            program_input = input('Please, insert program input:\n')
+        elif context.Settings.arg_program_input is not  None:
+            with open(context.Settings.arg_program_input, mode='r', encoding='ASCII') as file:
+                program_input = file.read()
+
         # run sourcecode
         output = interpreter.interpret_bf(sourcecode, context.Settings.arg_memory, int(context.Settings.arg_memory_pointer),
-                                      context.Settings.opt_test, rgb_in)
+                                      context.Settings.opt_test, rgb_in, program_input)
         # print output
         print(output.decode('ASCII'), end='')
     exit(context.RETURN_OK)

@@ -28,6 +28,12 @@ the file as an image file (see below)
 desired state in a format of python bytes (as noted in the start of this line)
     -p,  --memory_pointer_position   n   set starting position of memory pointer. n is the desired position. Must be
 greater or equal to 0 and less then length of memory (that is 1 by default)
+    --prin, --program-input [program_input_file]    set program input. If program_input_file is defined, infut will be
+read from it. Otherwise interpreter will get it from user in interactive mode (the use will be asked to insert input
+when the program is started; if inrepreter is already running in interactive mode, the user will be asked to insert
+input after he or she inserts code). If program gets input via this option, the input deined in program code (with !)
+is ignored.
+
 Program launched without arguments acts as an interpreter in interactive mode. The user is asked to insert brainfuck
 code. The retrieved code will be interpreted.
 
@@ -70,7 +76,7 @@ Exit codes:
 USAGE = \
 '''Usage:
     Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
-[-p|memory_pointer_position n] [--pnm|--pbm] [-h|--help]
+[-p|memory_pointer_position n] [--pnm|--pbm] ['--prin'|'--program-input' [program_input_file]] [-h|--help]
     Translator mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] |
 --f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
 
@@ -120,6 +126,8 @@ class Settings:
     arg_output_bf_file = None
     arg_console_sourcecode = None
     opt_bl_spiral = False
+    # will contain input file name or True for intaractive mode
+    arg_program_input = None
 
 
     # parses opts. returns a list of unparced arguments
@@ -251,9 +259,7 @@ class Settings:
                     flag_mem_ptr_set = True
                     try:
                         if not is_opt(opts[idx + 1]):
-                            # print('\n\nProcessing -p.\nGot: ' + str(opts[idx + 1]))
                             Settings.arg_memory_pointer = opts[idx + 1]
-                            # print('Saved: ' + str(Settings.arg_memory_pointer ))
                             idx += 2
                             continue
                     except IndexError:
@@ -274,12 +280,23 @@ class Settings:
                     print(USAGE)
                     print(HELP)
                     exit(0)
+
+                elif opts[idx] == '--prin' or '--program-input':
+                    # interactive input
+                    Settings.arg_program_input = True
+                    idx +=1
+                    try:
+                        if not is_opt(opts[idx]):
+                            # input file
+                            Settings.arg_program_input = opts[idx]
+                            idx += 1
+                    except IndexError:
+                        pass
+                    continue
+
                 else:
                     raise OptsException('Unknown opt {} occured'.format(opts[idx]))
                 idx += 1
-            # argv = [arg for arg in opts if not is_opt(arg)]
-            # print("ARGV::: ")
-            # print(argv)
             argc = len(argv)
             if argc == 1:
                 Settings.interactive_mode = True
