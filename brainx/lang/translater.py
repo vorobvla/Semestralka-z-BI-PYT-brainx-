@@ -218,9 +218,9 @@ def ascii_to_bf(str):
     last_ord = 0
     # first cell -- cykle idx, second == ord
     program = '>'
-    const = 5
 
     for token in ords:
+        #program += '\n'
         # count difference berween new and old wasl of cell
         delta = token - last_ord
         if delta == 0:
@@ -228,10 +228,11 @@ def ascii_to_bf(str):
             continue
         instr = '-' if delta < 0 else '+'
         delta = abs(delta)
+        const = round(sqrt(delta))
 
         if delta > 10:
             # too long, make cykle
-            program += '<{idx}[>{body}<-]>{out}.'.format(idx=instr*(delta//const), body=instr*const,
+            program += '<{idx}[>{body}<-]>{out}.'.format(idx='+'*(delta//const), body=instr*const,
                                                            out=instr*(delta % const))
         else:
             #short enouth. no need for cykle

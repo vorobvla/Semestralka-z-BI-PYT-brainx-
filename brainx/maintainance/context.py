@@ -58,9 +58,11 @@ output_bf_file. It in not needed to specify if the image is contains brainloller
 will do it itself.
 
 Parameters for generating code (this experemental feature should be a new mode, but it is not fully implemented yet):
-    --gen-bf, --gen-bl [text] generate brainfuck program that's output will be value of argument text. If this argument
+    --gen-bf, --gen-bl [text] generate brainfuck program that's output will be value of argument 'text'. If this argument
 is missing, the user will have to insert the desired text in intractive mode (lake just like when calling with --prin
- withoutor without arguments)
+ withoutor without arguments). --gen-bf prints generated program to ouptut, --gen-bl also prints generated program to
+ ouptut and creates image file with brinloller code of the program. The name of the file is T.bl.png where T is the
+ first 20 signs of output of the generated program.
 
 Files' names and formats:
     Text files with brainfuck code must be text files with ASCII encoding. Their names must end with ".b" extension.
@@ -80,8 +82,8 @@ method set to 0. They only contain IHDR, IDAT and IEND chunks. All data is saved
 Exit codes:
     0 if Ok,
     1 any other problem,
-    4 attempt to process an image file, that's format is not supported
-    8 attempt to process an image file, that contains obligatory chunks, that's processing is not implemented
+    4 attempt to process an image file, that's format is not supported,
+    8 attempt to process an image file, that contains obligatory chunks, that's processing is not implemented.
 '''
 
 USAGE = \

@@ -15,7 +15,7 @@ Funkcionalita odpovídající požadavkům:
 --------------------------------------------------------
 Funkcionalita navíc:
 *	Zápis brainlolleru ve formě spirály (--f2lc --bl-spiral)
-		Překladač standartně zápisuje brainloller (a braincopter) v pořadí stejném jako na příkladu z přednášek. Dá se to uspořádaní změnít do úspořádaání do spirály, které zkusím popsat následujícím schématem:
+		Překladač standardně zapisuje brainloller (a braincopter) v pořadí stejném jako na příkladu z přednášek. Dá se to uspořádaní změnit do uspořádání do spirály, které zkusím popsat následujícím schématem:
 	-----------------V
 	>--------------V |
 	| >----------V | |
@@ -27,31 +27,32 @@ Funkcionalita navíc:
 	| ^------------< |
 	^----------------<
 
-Kdě symboly V < ^ > oznáčují rotace IP doprava, X je NOP,  - | jsou ostatní instrukce.
-Tuto funkčnost se dá výužít požítím přepínače --bl-spiral u přeinacu --f2lc ( příklad syntaxe: --f2lc --bl-spiral -i input_bf_file [input_png_file] -o output_bl_bc_file ). Je-li daný přepínač nástaven, výstupem překladače bude vždy obrázek v brainlolleru (a v spirálové podobě). Výskytuje-li se zároveň argument input_png_file, program ho ignoruje.
-*	Vstup programu ze souboru nebo od užívatele v interaktívním režímu (--prin|--program-input [program_input_file])
-		V režímu interpretru se dá zadát vstup prográmu pomocí přepínače --prin|--program-input [program_input_file]. Vstup bude načítan ze souboru, jehož název je v argumentu program_input_file. Nebude-li daný argument uveden, užívateloví bude nabídnuto uvést vstup v interaktivním režímu (podobně tomu, ják se uvádí kód 
+Kde symboly V < ^ > označují rotace IP doprava, X je NOP,  - | jsou ostatní instrukce.
+Tuto funkčnost se dá využít požitím přepínače --bl-spiral u přepínače --f2lc ( příklad syntaxe: --f2lc --bl-spiral -i input_bf_file [input_png_file] -o output_bl_bc_file ). Je-li daný přepínač nastaven, výstupem překladače bude vždy obrázek v brainlolleru (a v spirálové podobě). Výskytuje-li se zároveň argument input_png_file, program ho ignoruje.
+*	Vstup brainfuckovského programu ze souboru nebo od uživatele v interaktivním režimu (--prin|--program-input [program_input_file] v režímu interpretru)
+		V režimu interpretru se dá zadát vstup prográmu pomocí přepínače --prin|--program-input [program_input_file]. Vstup bude načítan ze souboru, jehož název je v argumentu program_input_file. Nebude-li daný argument uveden, užívateloví bude nabídnuto uvést vstup v interaktivním režímu (podobně tomu, ják se uvádí kód 
 ve variantě bez argumentů). Je-li interpretr už běží v intaratívním řežímu, úžívatel zjíská možnost úvest vstup poté když uvedé kód prográmu. Je-li vstup prográmu je nástaven pomocí tohoto přepínače, vstup, který je úveden ve pográmovém kódu (pomocí !) je ignorován.
-*	Možnost aplikovat operace mod 128 na výstup (--o128)
-		Jelokož data v páměťových buňkách mohou být v rozsahu od 0 255 a program pro kování vstupu používá ASCII, mohou se nástávat chýby, pokud do výstupu
-se dostala hodnota, kterou ASCII není schopno rozkodovát. Přepínáč interpretru --o128 slouží k tomu aby se dálo téso situací výhnout. Záručuje že nad káždou hodnotou,
-ktérá příchází na výstup, bude provedena operace mod 128, tedy výstup vždy bude rozkodovatelný. 
-
+*	Možnost aplikovat operace mod 128 na výstup programu (--o128, v obou režimu interpretru)
+		Jelikož data v paměťových buňkách mohou být v rozsahu od 0 255 a program pro kování vstupu používá ASCII, mohou se nastávat chyby, pokud do výstupu
+se dostala hodnota, kterou ASCII není schopno rozkódovat. Přepínač interpretru --o128 slouží k tomu aby se dalo této situací vyhnout. Zaručuje, že nad každou hodnotou,
+která přichází na výstup, bude provedena operace mod 128, tedy výstup vždy bude rozkódovatelný. 
+*	Generování programů v brainfucku. (--gen-bf | --gen-bl [text], bez žádných dalších parametrů)
+		Jednoduchý generátor braifukovského kódu. Vygeneruje program v brainfucku, který bude vypisovat zadaný text. Není-li text uveden, uživatelovi bude nabídnuto uvést ho za běhu programu (interaktivní režim). Varianta --gen-bf vypíše program do standardního výstupu a zapíše jeho podobu v jazyce brainloller do PNG souboru s názvem T.bl.png kde T je prvních (nejvíce) 20 znaku výpisu programu. Samotný program vždy využívá právě dvě paměťové buňky. Je-li počet instrukcí, které se má provádět nad stejnou buňkou je příliš velký, přepíše je pomocí cyklu tak, aby jak jeho tělo tak i počet inkrementací před jeho zavoláním byli co nejmenší (v ideálním případě by se rovnali). Jelikož daná funkcionalita nespadá do kompetence žádného režimu, měla by být přidaná režimu novému, který by se odlišoval od ostatních dvou. Autorovi nezbývá čas ani energie pro to aby to slušně odladil a implementoval, takže on jenom upozorní že do parametrů programu by měl byt zadán jenom jeden z uvedených přepínačů a bez žádných kombinací s parametry z jiných režimů. V opačném případě korektní funkčnost programu není zaručená.
 --------------------------------------------------------
 
 Detailnější popis programu:
 
 *	Spuštění
-		Program se dá spouštět ve dvou režimech: jako interpretr („Interpreter mode“) a jako překladač (v helpu je uveden jako „Translator mode“). Parametry příkazové řádky pro teto dvě varianty se odlišují.  Ovšem v obou režimech jsou vlídní přepínače „-t“ i „--test“  (výpis ladící informace ve formátu, určeném v zadání; v režimu překladače v  výpisu budou mizet informace o paměti (#memory  a #memory pointer), protože program se v daném režimu nespustí a tedy stav paměti není zajímavý pro uživatele), „-h“ i „--help“ (výpis pomocné informace) a „--pnm“ i „--pbm“ (zápis vstupních/výstupních obrázků do PNM souborů ve formátu uvedeném v zadaní a s názvy „input_image_in_pnm“ resp „output_image_in_pnm“). Vyskytují-li se v parametrech nespecifikované argumenty a přepínače, opakující se  přepínače nebo parametry, které jsou příslušné různým režimům, (většinou) se vyskytne výjimka nebo parametr bude (měl by byt) ignorován. 
+		Program se dá spouštět ve dvou režimech: jako interpretr („Interpreter mode“) a jako překladač (v helpu je uveden jako „Translator mode“). Parametry příkazové řádky pro teto dvě varianty se odlišují.  Ovšem v obou režimech jsou vlídní přepínače -t i --test  (výpis ladící informace ve formátu, určeném v zadání; v režimu překladače v  výpisu budou mizet informace o paměti (#memory  a #memory pointer), protože program se v daném režimu nespustí a tedy stav paměti není zajímavý pro uživatele), -h i --help (výpis pomocné informace) a  --pnm i --pbm (zápis vstupních/výstupních obrázků do PNM souborů ve formátu uvedeném v zadaní a s názvy input_image_in_pnm resp output_image_in_pnm). Vyskytují-li se v parametrech nespecifikované argumenty a přepínače, opakující se  přepínače nebo parametry, které jsou příslušné různým režimům, (většinou) se vyskytne výjimka nebo parametr bude (měl by byt) ignorován. 
 
   		Režim interpretru:
 			Využíti:  brainx [__zdrojový_soubor__ | "__kód_v_brainfucku__"] [-t|--test] [-m|memory b'__počáteční_stav_paměti__'] [-p|--memory_pointer_position __pozice_paměťového_ukazatele__] [--pnm|--pbm] ['--prin'|'--program-input' [__vstup_programu__]] [-h|--help] [--o128]
-			Varianta bez argumentů načítá program ze standardního vstupu (v interaktivním režimu). Ovšem přepínače v daném případě budou platit (není to úplně podlě zadání ale to připadá autorovi praktičtější, lze tedy opravit nastavení i pro program uvedený  v interaktivním režímu) 
+			Varianta bez argumentů načítá program ze standardního vstupu (v interaktivním režimu). Ovšem přepínače v daném případě budou platit (není to úplně podle zadání ale to připadá autorovi praktičtější, lze tedy opravit nastavení i pro program uvedený  v interaktivním režimu) 
 			První argument  je název zdrojového souboru. Pokud název končí příponou „.b“ je vnímán jako textový soubor s programem v brainfucku tedy program se pokusí tento kód spustit. O opačném případě soubor je vnímán jako (možný) PNG obrázek a program se pokusí spustit kód, který získá překladem daného obrázku do brainfucku. Mimořádným případem je argument v uvozovkách, který bude vnímán jako spustitelný program v brainfucku (podle zadání)
-			Argument přepínače -m (--memory) je binární řetězec popisující počateční stav paměti programu.
+			Argument přepínače -m (--memory) je binární řetězec popisující počáteční stav paměti programu.
 			Argument přepínače -p (--memory-pointer) je počáteční pozice paměťového ukazatele. Je-li nastaven na pozice mimo paměti (tedy větší než délka paměti zmenšená o 1) program vyhodí výjimku. 
-			Argument --prin | --program-input [program_input_file] nástavuje progámový vstup ze souboru nebo od užívatele. Podrobnějí v. Funkcionalita navíc.
-			Přepínač --o128	záručuje provedění operace mod 128 na každou hodnotu ve výstupu brainfuckovského programu (v. Funkcionalita navíc).			
+			Argument --prin | --program-input [program_input_file] nastavuje programový vstup ze souboru nebo od uživatele. Podrobněji v. Funkcionalita navíc.
+			Přepínač --o128 provedení operace mod 128 nad výstupem ( v. Funkcionalita navíc).
 
 		Režim překladače:
 			Využíti: brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f __vstupní_bl_nebo_bc_soubor__ [__výstupní_bf_soubor__] | --f2lc [--bl-spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )
@@ -70,7 +71,7 @@ Detailnější popis programu:
 			Vstup
 			Vstup se odliší pomoci instrukce ! . Část kódu od prvního výskytu této instrukce do konce programu je brána jako vstup.  Instrukce , (čtení ze vstupu) nezapisuje nic do buňky pokud se ze vstupu nedá nic načíst.
 			Výstup
-			Výstup programu se aktualizuje jakmile se program narazí na instrukce . (výpis do výstupu). Pro dekodováný výstupu se použícá ASCII, proto výskýtují-li se v něm hodnoty 128 -- 255, výhodí se výjímka při dekódování. Aby se tomu výhnout lze použít přepínač --o128 (v. Funkcionalita navíc)
+			Výstup programu se aktualizuje jakmile se program narazí na instrukce . (výpis do výstupu). Pro dekódování výstupu se používá ASCII, proto vyskytují-li se v něm hodnoty 128 -- 255, vyhodí se výjimka při dekódování. Aby se tomu vyhnout lze použít přepínač --o128 (v. Funkcionalita navíc)
 			Cykly
 			Před spuštěním kódu interpretr ho analyzuje s tím aby odhalil cykly a zapsal je do slovníků v podobě {pozice v kódu, kde začíná cyklus} : {pozice v kódu, kde začíná cyklus}  (případně naopak). Potom, u vykonání kódu, pří pořečtění instrukce začátku nebo konce cyklu a při splnění souvisejících podmínek (tedy zda je potřeba skočit na konec/začátek cyklu) interpretr mění aktuální pozice v kódu na příslušnou pozice zapsanou v příslušném slovníku (pod klíčem který se rovná aktuální pozici). Samotná analýza probíhá pomocí zásobníku (tedy pomoci seznamu, který se chová jako zásobník). Pozice začátku cyklu se ukládá na vrchol, na konci cyklu začátek příslušného cyklu se vyzvedne ze zásobníku. Při pokusu vyzvednutí z prázdného zásobníku nebo není-li zásobník na konce analýzy prázdny zaznamenají chybný konec nebo začátek cyklu. 
 			Další poznámky
@@ -97,8 +98,3 @@ Detailnější popis programu:
 
 	Další poznámky:
 Autor psal  vše komentáře a commitovací zprávy v angličtině protože programuje právě v angličtině, to je jeho zvykem.  
-
-
-
-
-
