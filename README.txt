@@ -14,8 +14,24 @@ Funkcionalita odpovídající požadavkům:
 
 --------------------------------------------------------
 Funkcionalita navíc:
+*	Zápis brainlolleru ve formě spirály. 
+		Překladač standartně zápisuje brainloller (a braincopter) v pořadí stejném jako na příkladu z přednášek. Dá se to uspořádaní změnít do úspořádaání do spirály, které zkusím popsat následujícím schématem:
+	------------------V
+	>---------------V |
+	| >-----------V | |
+	| | >-------V | | |
+	| | | >---V | | | |
+	XXXXXXXXXX< | | | |
+	| | | ^-----< | | |
+	| | ^---------< | |
+	| ^-------------< |
+	^-----------------<
+
+Kdě symboly V < ^ > oznáčují rotace IP doprava, X je NOP,  - | jsou ostatní instrukce.
+Tuto funkčnost se dá výužít požítím přepínače --bl_spiral u přeinacu --f2lc ( příklad syntaxe: --f2lc --bl_spiral -i input_bf_file [input_png_file] -o output_bl_bc_file ). Je-li daný přepínač nastaven, výstupem programu bude vždy obrázek v brainlolleru (a v spirálové podobě). Výskytuje-li se zároveň argument input_png_file, program ho ignoruje.
 
 --------------------------------------------------------
+
 Detailnější popis programu:
 
 *	Spuštění
@@ -29,9 +45,9 @@ Detailnější popis programu:
 			Argument přepínače -p je počáteční pozice paměťového ukazatele. Je-li nastaven na pozice mimo paměti (tedy větší než délka paměti zmenšená o 1) program vyhodí výjimku. 
 
 		Režim překladače:
-			Využíti: brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f __vstupní_bl_nebo_bc_soubor__ [__výstupní_bf_soubor__] | --f2lc -i __vstupní_bf_soubor__ [__vstupní_png_soubor__] -o __výstupní_bl_nebo_bc_soubor__ )
+			Využíti: brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f __vstupní_bl_nebo_bc_soubor__ [__výstupní_bf_soubor__] | --f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )
 			--lc2f  přeloží brainlollerovský nebo braincopterovský kód  ze vstupního obrázku do brainfucku. Výsledek zapíše do výstupního souboru, pokud je uveden (přepíše soubor s daným jménem je-li existuje, v opačném případě vytvoří nový). Pokud název výstupního souboru uveden není, výsledek se vypisuje do standardního vstupu. Jazyk vstupního obrázku program rozpoznává sám (plodě analýzy barev jako je uvedeno v zadání). Název výstupního souboru by měl  končit  příponou „.b“, ovšem pokud uživatel uvede název jinak, program to automatické opraví (tedy je zaručeno že nový/přepsaný soubor bude mít název končící na „.b“) 
-			--f2lc přeloží brainfuckovský kód do obrázku s programem v brainlolleru (pokud název vstupního PNG souboru není uveden) nebo v braincopteru (v opačném případě). Předpokládá se že název souboru s kódem v brainfucku končí na „.b“ ale není-li tomu tak, program tuto chybu opraví (stejně jako u --lc2f). Je-li název v vstupního PNG souboru je uveden, jeho obsah bude použit u překladu do braincopteru. Program výpise debagovací  informace, narazí-li  na instrukce # v brainfuckovském kódu. Program ignoruje nepovinné přepínače uvedené-li po daném příkladu (nemá to praktický smysl, to je bug).
+			--f2lc přeloží brainfuckovský kód do obrázku s programem v brainlolleru (pokud název vstupního PNG souboru není uveden) nebo v braincopteru (v opačném případě). Předpokládá se že název souboru s kódem v brainfucku končí na „.b“ ale není-li tomu tak, program tuto chybu opraví (stejně jako u --lc2f). Je-li název v vstupního PNG souboru je uveden, jeho obsah bude použit u překladu do braincopteru. Program výpise debagovací  informace, narazí-li  na instrukce # v brainfuckovském kódu. Program ignoruje nepovinné přepínače uvedené-li po daném příkladu (nemá to praktický smysl, to je bug). --bl_spiral zapíná zápís brainlollerovského obrázku do spirálové podoby (v. Funkcionalita navíc)
 
 *	Ukončení
 		Po úspěšném běhu program vrátí kód 0 a vepíše výsledek běhu spušteného programu (jedná-li se o interpretru) a výsledek překladu nebo nic (u překladače, záleží na parametrech). Pokud se během programu pokusilo zpracovat soubor, který není ani textem ani PNG nebo soubor, který obsahuje nějakou povinni hlavičku kromě IHDR, IDAT a IEND program se chová podle zadání (vyhodí příslušnou výjimku a ukončí se s příslušným kódem). V jiném případě vyhazuje výjimky které se  objevili a končí se s kódem 1.

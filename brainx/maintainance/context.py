@@ -32,10 +32,13 @@ Program launched without arguments acts as an interpreter in interactive mode. T
 code. The retrieved code will be interpreted.
 
 Parameters valid in Translator mode:
-    --f2lc  -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
+    --f2lc [--bl_spiral] -i input_bf_file [input_png_file]    -o output_bl_bc_file   translate brainfuck code to brainloller or
 braincopter. -i specifies arguments input_bf_file and input_png_file. The first one that is the name of text file
 containing the brainfuck code to be translated. The second one is the name of the image file that will be used for
-translation to braincopter. If this argument is missing, the program will be translate to brainloller.
+translation to braincopter. If this argument is missing, the program will be translate to brainloller. If --bl_spiral
+option is set the brinfuck input will be translated into brainloller and the instructions in the oputput file will be
+arranged into spiral. In this case argument input_png_file will be ignored. The program will be translated into
+brainloller even if this argument presents.
 -o output_bl_bc_file contains the name of image file where the result brainloller/braincopter image will be written to
     --lc2f  input_bl_bc_file    [output_bf_file]                        translate image in brainloller/braincopter
 form input_bl_bc_file file to brainfuck code. The result will be written to text file with name specified in
@@ -69,7 +72,7 @@ USAGE = \
     Interpreter mode:    brainx [programfile | "brainfuck_code"] [-t|--test] [-m|memory b'memory_state']
 [-p|memory_pointer_position n] [--pnm|--pbm] [-h|--help]
     Translator mode:     brainx [-t|--test] [--pnm|--pbm] [-h|--help] ( --lc2f input_bl_bc_file [output_bf_file] |
---f2lc -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
+--f2lc [--bl_spiral] -i input_bf_file [input_png_file] -o output_bl_bc_file )'''
 
 UNKNOWN_OPTS = lambda unknwn_opt: 'Error. Unknown option \'{}\' occured.\n'.format(unknwn_opt) + USAGE
 
