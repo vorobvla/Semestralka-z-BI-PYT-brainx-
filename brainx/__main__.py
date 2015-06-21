@@ -70,6 +70,22 @@ try:
 
     # run as interpreter
     else:
+        # or as generator
+        if context.Settings.arg_bf_gen is not None:
+            string = ''
+            if context.Settings.arg_bf_gen is True:
+                # interctive
+                string = input('Please, insert output of generated program:\n')
+            else:
+                # from console
+                string = context.Settings.arg_bf_gen
+            #gen code
+            code = translater.ascii_to_bf(string)
+            if context.Settings.gen_bl == True:
+                # translate code to image
+                translater.f_to_lc(code).to_png(string[:20] + '.bl.png')
+            print(code)
+            exit(0)
         # defined here to call interpret_bf in one place
         rgb_in = None
         # retrieve source code (retrieves it from just one place)

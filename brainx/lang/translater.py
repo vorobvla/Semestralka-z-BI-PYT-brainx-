@@ -212,5 +212,29 @@ def f_to_l_spiral(bf_sourcecode):
         walked += 1
     return img
 
+# generate bf program that prints str
+def ascii_to_bf(str):
+    ords = [ord(c) for c in str]
+    last_ord = 0
+    # first cell -- cykle idx, second == ord
+    program = '>'
+    const = 5
 
+    for token in ords:
+        # count difference berween new and old wasl of cell
+        delta = token - last_ord
+        if delta == 0:
+            program += '.'
+            continue
+        instr = '-' if delta < 0 else '+'
+        delta = abs(delta)
 
+        if delta > 10:
+            # too long, make cykle
+            program += '<{idx}[>{body}<-]>{out}.'.format(idx=instr*(delta//const), body=instr*const,
+                                                           out=instr*(delta % const))
+        else:
+            #short enouth. no need for cykle
+            program += instr * delta + '.'
+        last_ord = token
+    return program

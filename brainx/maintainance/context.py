@@ -128,6 +128,8 @@ class Settings:
     opt_bl_spiral = False
     # will contain input file name or True for intaractive mode
     arg_program_input = None
+    arg_bf_gen = None
+    gen_bl = False
 
 
     # parses opts. returns a list of unparced arguments
@@ -281,7 +283,7 @@ class Settings:
                     print(HELP)
                     exit(0)
 
-                elif opts[idx] == '--prin' or '--program-input':
+                elif opts[idx] == '--prin' or opts[idx] == '--program-input':
                     # interactive input
                     Settings.arg_program_input = True
                     idx +=1
@@ -289,6 +291,21 @@ class Settings:
                         if not is_opt(opts[idx]):
                             # input file
                             Settings.arg_program_input = opts[idx]
+                            idx += 1
+                    except IndexError:
+                        pass
+                    continue
+
+                elif opts[idx] == '--gen-bf' or opts[idx] == '--gen-bl':
+                    # interactive input
+                    if opts[idx] == '--gen-bl':
+                        Settings.gen_bl = True
+                    Settings.arg_bf_gen = True
+                    idx +=1
+                    try:
+                        if not is_opt(opts[idx]):
+                            # input file
+                            Settings.arg_bf_gen = opts[idx]
                             idx += 1
                     except IndexError:
                         pass
